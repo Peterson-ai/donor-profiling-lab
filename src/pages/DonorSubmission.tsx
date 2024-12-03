@@ -19,17 +19,22 @@ const DonorSubmission = () => {
       // First, get the profile data
       const { data: profile } = await supabase
         .from("profiles")
-        .select("*")
+        .select("organization")
         .eq("id", user.id)
-        .maybeSingle();
+        .single();
 
-      // Prepare donor data with profile information
+      // Prepare donor data without profile fields that don't exist in donors table
       const donorData = {
-        ...data,
+        appeal_code: data.appeal_code,
+        year: data.year,
+        appeal_name: data.appeal_name,
+        structure: data.structure,
+        giving_category: data.giving_category,
+        county: data.county,
+        donation_amount: data.donation_amount,
         email: user.email,
         profile_id: user.id,
         organization: profile?.organization || "",
-        full_name: profile?.full_name || "",
       };
 
       const { error } = await supabase
