@@ -30,10 +30,18 @@ const Login = () => {
     }
   };
 
+  const handleRegister = () => {
+    navigate("/register");
+    toast({
+      title: "Registration",
+      description: "Please create your account.",
+    });
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center">Login to Donor Profiling</h1>
+        <h1 className="text-2xl font-bold text-center">Login to BSA Donor Platform</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -63,6 +71,16 @@ const Login = () => {
             Sign In
           </Button>
         </form>
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">Don't have an account?</p>
+          <Button
+            variant="outline"
+            className="mt-2 w-full"
+            onClick={handleRegister}
+          >
+            Create Account
+          </Button>
+        </div>
       </div>
     </div>
   );
