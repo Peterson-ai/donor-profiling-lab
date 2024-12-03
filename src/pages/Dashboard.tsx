@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Image } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -64,8 +63,12 @@ const Dashboard = () => {
           <div className="p-6 border rounded-lg bg-card">
             <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
             <div className="flex flex-col items-center space-y-6">
-              <div className="w-32 h-32 bg-accent rounded-lg flex items-center justify-center mb-4">
-                <Image className="w-16 h-16 text-muted-foreground" />
+              <div className="w-32 h-32 bg-accent rounded-lg flex items-center justify-center mb-4 overflow-hidden">
+                <img 
+                  src="/lovable-uploads/f228ec90-d0f3-4470-85f2-f90cbc734b6d.png" 
+                  alt="Cub Scouts Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <Button 
                 className="w-full"
