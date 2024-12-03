@@ -8,12 +8,15 @@ import { useToast } from "@/components/ui/use-toast";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     try {
       await signIn(email, password);
       navigate("/dashboard");
@@ -21,12 +24,15 @@ const Login = () => {
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Invalid email or password.",
+        title: "Login Failed",
+        description: "Please check your email and password and try again.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,6 +70,8 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
+              placeholder="Enter your email"
             />
           </div>
           <div className="space-y-2">
@@ -76,6 +84,8 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
+              placeholder="Enter your password"
             />
           </div>
           <div className="text-right">
@@ -86,8 +96,8 @@ const Login = () => {
               Forgot password?
             </Link>
           </div>
-          <Button type="submit" className="w-full">
-            Sign In
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
         <div className="text-center">
@@ -96,6 +106,7 @@ const Login = () => {
             variant="outline"
             className="mt-2 w-full"
             onClick={handleRegister}
+            disabled={isLoading}
           >
             Create Account
           </Button>
