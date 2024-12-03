@@ -26,6 +26,7 @@ const Dashboard = () => {
   });
 
   const displayName = profile?.full_name || user?.email || "Guest";
+  const totalDonations = donations?.reduce((sum, donation) => sum + donation.donation_amount, 0) || 0;
 
   return (
     <div className="container mx-auto p-8">
@@ -45,15 +46,25 @@ const Dashboard = () => {
       </div>
 
       <div className="grid gap-6">
-        <div className="p-6 border rounded-lg bg-card">
-          <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
-          <div className="space-y-4">
-            <Button 
-              className="w-full"
-              onClick={() => navigate("/donor-submission")}
-            >
-              Submit New Donation
-            </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-6 border rounded-lg bg-card">
+            <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
+            <div className="space-y-4">
+              <Button 
+                className="w-full"
+                onClick={() => navigate("/donor-submission")}
+              >
+                Submit New Donation
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 border rounded-lg bg-card">
+            <h2 className="text-2xl font-semibold mb-4">Total Donations</h2>
+            <p className="text-4xl font-bold text-primary">
+              ${totalDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+            <p className="text-muted-foreground mt-2">Total amount donated to date</p>
           </div>
         </div>
 
