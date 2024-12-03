@@ -1,16 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { profile } = useProfile(user);
+
+  const displayName = profile?.full_name || user?.email || "Guest";
 
   return (
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Welcome, {user?.email}</h1>
+          <h1 className="text-3xl font-bold">Welcome, {displayName}</h1>
           <p className="text-muted-foreground">Manage your donations and profile</p>
         </div>
         <div className="space-x-4">
