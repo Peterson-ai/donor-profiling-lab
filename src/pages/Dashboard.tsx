@@ -20,6 +20,14 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto space-y-8">
+        <div className="flex flex-col items-center mb-8">
+          <img 
+            src="/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png"
+            alt="BSA Logo"
+            className="w-24 h-24 mb-4"
+          />
+        </div>
+        
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Welcome, {user?.email}</h1>
           <Button variant="outline" onClick={handleSignOut}>

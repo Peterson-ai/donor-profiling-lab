@@ -39,8 +39,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-background relative">
+      <div className="absolute inset-0 opacity-5 bg-contain bg-center bg-no-repeat" 
+           style={{ backgroundImage: "url('/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png')" }}>
+      </div>
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg relative z-10">
+        <img 
+          src="/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png"
+          alt="BSA Logo"
+          className="w-24 h-24 mx-auto mb-4"
+        />
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-center">BSA Donor Platform</h1>
           <h2 className="text-xl text-center text-muted-foreground">Login</h2>
