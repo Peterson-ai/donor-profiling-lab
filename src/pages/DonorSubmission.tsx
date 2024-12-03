@@ -16,14 +16,7 @@ const DonorSubmission = () => {
     
     setIsSubmitting(true);
     try {
-      // First, get the profile data
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("organization")
-        .eq("id", user.id)
-        .single();
-
-      // Prepare donor data without profile fields that don't exist in donors table
+      // Prepare donor data with only the fields that exist in donors table
       const donorData = {
         appeal_code: data.appeal_code,
         year: data.year,
@@ -34,7 +27,6 @@ const DonorSubmission = () => {
         donation_amount: data.donation_amount,
         email: user.email,
         profile_id: user.id,
-        organization: profile?.organization || "",
       };
 
       const { error } = await supabase
