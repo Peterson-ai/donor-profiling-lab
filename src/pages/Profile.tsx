@@ -45,21 +45,46 @@ const Profile = () => {
   useEffect(() => {
     const getProfile = async () => {
       try {
-        const { data, error } = await supabase
+        if (!user?.id) return;
+
+        // First try to get the existing profile
+        const { data: existingProfile, error: fetchError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', user?.id)
+          .eq('id', user.id)
           .single();
 
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
+        if (fetchError && fetchError.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          const { data: newProfile, error: insertError } = await supabase
+            .from('profiles')
+            .insert([
+              { 
+                id: user.id,
+                full_name: '',
+                phone: '',
+                organization: '',
+              }
+            ])
+            .select()
+            .single();
 
-        if (data) {
+          if (insertError) throw insertError;
+          
+          if (newProfile) {
+            form.reset({
+              full_name: newProfile.full_name || "",
+              phone: newProfile.phone || "",
+              organization: newProfile.organization || "",
+            });
+          }
+        } else if (fetchError) {
+          throw fetchError;
+        } else if (existingProfile) {
           form.reset({
-            full_name: data.full_name || "",
-            phone: data.phone || "",
-            organization: data.organization || "",
+            full_name: existingProfile.full_name || "",
+            phone: existingProfile.phone || "",
+            organization: existingProfile.organization || "",
           });
         }
       } catch (error) {
