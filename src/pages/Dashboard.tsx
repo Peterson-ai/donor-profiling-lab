@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Image } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -62,7 +63,10 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 border rounded-lg bg-card">
             <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
-            <div className="space-y-4">
+            <div className="flex flex-col items-center space-y-6">
+              <div className="w-32 h-32 bg-accent rounded-lg flex items-center justify-center mb-4">
+                <Image className="w-16 h-16 text-muted-foreground" />
+              </div>
               <Button 
                 className="w-full"
                 onClick={() => navigate("/donor-submission")}
@@ -76,10 +80,10 @@ const Dashboard = () => {
             <h2 className="text-2xl font-semibold mb-4">Total Donations</h2>
             <div className="flex flex-col space-y-4">
               <div>
-                <p className="text-4xl font-bold text-primary">
+                <p className="text-2xl font-bold text-primary">
                   ${totalDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
-                <p className="text-muted-foreground mt-2">Total amount donated to date</p>
+                <p className="text-sm text-muted-foreground mt-1">Total amount donated to date</p>
               </div>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
