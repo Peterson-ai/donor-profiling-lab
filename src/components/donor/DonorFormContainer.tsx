@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form } from "@/components/ui/form";
@@ -37,19 +37,18 @@ export const DonorFormContainer = ({ onSubmit, isSubmitting }: DonorFormContaine
   });
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <DonorFormFields 
-          control={form.control} 
-          appealCode={form.getValues("appeal_code")} 
-        />
-        
-        <div className="flex justify-end space-x-4">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Donation"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <FormProvider {...form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <DonorFormFields control={form.control} />
+          
+          <div className="flex justify-end space-x-4">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Donation"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </FormProvider>
   );
 };
