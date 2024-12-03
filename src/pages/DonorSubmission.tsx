@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Form } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
 import { DonorFormContainer } from "@/components/donor/DonorFormContainer";
 import { supabase } from "@/lib/supabase";
@@ -22,7 +21,7 @@ const DonorSubmission = () => {
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       // Prepare donor data with profile information
       const donorData = {

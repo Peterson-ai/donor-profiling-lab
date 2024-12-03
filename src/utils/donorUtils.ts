@@ -25,3 +25,9 @@ export const GIVING_CATEGORY_OPTIONS = [
   "Regular Donor",
   "First Time Donor"
 ] as const;
+
+export const COUNTY_OPTIONS = [
+  "Broward County",
+  "Monroe County",
+  "Miami-Dade County"
+] as const;
