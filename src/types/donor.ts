@@ -6,11 +6,12 @@ export interface Donor {
   structure: string;
   giving_category: string;
   last_org_name: string;
-  first_name: string;
+  first_name?: string;
   city: string;
   state: string;
   zip: string;
   email: string;
   donation_amount: number;
+  user_id: string;
   created_at?: string;
 }
