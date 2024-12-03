@@ -41,7 +41,10 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center">Login to BSA Donor Platform</h1>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-center">BSA Donor Platform</h1>
+          <h2 className="text-xl text-center text-muted-foreground">Login</h2>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
