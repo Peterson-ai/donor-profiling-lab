@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
+import DonorSubmission from "./pages/DonorSubmission";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/donor-submission"
+              element={
+                <ProtectedRoute>
+                  <DonorSubmission />
                 </ProtectedRoute>
               }
             />
