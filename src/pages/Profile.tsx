@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,41 @@ const Profile = () => {
       organization: "",
     },
   });
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user?.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+
+        if (data) {
+          form.reset({
+            full_name: data.full_name || "",
+            phone: data.phone || "",
+            organization: data.organization || "",
+          });
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load profile data.",
+        });
+      }
+    };
+
+    if (user) {
+      getProfile();
+    }
+  }, [user, form, toast]);
 
   const onSubmit = async (data: ProfileFormValues) => {
     setIsLoading(true);
