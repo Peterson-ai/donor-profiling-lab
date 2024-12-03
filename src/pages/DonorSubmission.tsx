@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -16,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
+import { DonorFormFields } from "@/components/DonorFormFields";
+import { generateAppealCode, APPEAL_OPTIONS } from "@/utils/donorUtils";
 
 const donorFormSchema = z.object({
   appeal_code: z.string().min(1, "Appeal code is required"),
@@ -39,13 +41,14 @@ const DonorSubmission = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [appealCode, setAppealCode] = useState("");
 
   const form = useForm<DonorFormValues>({
     resolver: zodResolver(donorFormSchema),
     defaultValues: {
       appeal_code: "",
       year: new Date().getFullYear(),
-      appeal_name: "",
+      appeal_name: APPEAL_OPTIONS[0],
       structure: "",
       giving_category: "",
       last_org_name: "",
@@ -57,6 +60,16 @@ const DonorSubmission = () => {
       donation_amount: 0,
     },
   });
+
+  useEffect(() => {
+    const year = form.getValues("year");
+    const appealName = form.getValues("appeal_name");
+    if (appealName) {
+      const code = generateAppealCode(appealName, year);
+      setAppealCode(code);
+      form.setValue("appeal_code", code);
+    }
+  }, [form.watch("appeal_name"), form.watch("year")]);
 
   const onSubmit = async (data: DonorFormValues) => {
     setIsSubmitting(true);
@@ -98,83 +111,7 @@ const DonorSubmission = () => {
       <div className="p-6 border rounded-lg bg-card">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="appeal_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Appeal Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter appeal code" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="year"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Year</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
-                        onChange={e => field.onChange(parseInt(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="appeal_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Appeal Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter appeal name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="structure"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Structure</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter structure" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="giving_category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Giving Category</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter giving category" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <DonorFormFields control={form.control} appealCode={appealCode} />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField
