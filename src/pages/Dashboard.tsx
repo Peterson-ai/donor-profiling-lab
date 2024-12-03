@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +28,18 @@ const Dashboard = () => {
 
   const displayName = profile?.full_name || user?.email || "Guest";
   const totalDonations = donations?.reduce((sum, donation) => sum + donation.donation_amount, 0) || 0;
+
+  // Calculate donations by county
+  const donationsByCounty = donations?.reduce((acc, donation) => {
+    const county = donation.county || 'Unknown';
+    acc[county] = (acc[county] || 0) + donation.donation_amount;
+    return acc;
+  }, {} as Record<string, number>) || {};
+
+  const countyChartData = Object.entries(donationsByCounty).map(([county, amount]) => ({
+    county,
+    amount,
+  }));
 
   return (
     <div className="container mx-auto p-8">
@@ -61,10 +74,25 @@ const Dashboard = () => {
 
           <div className="p-6 border rounded-lg bg-card">
             <h2 className="text-2xl font-semibold mb-4">Total Donations</h2>
-            <p className="text-4xl font-bold text-primary">
-              ${totalDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </p>
-            <p className="text-muted-foreground mt-2">Total amount donated to date</p>
+            <div className="flex flex-col space-y-4">
+              <div>
+                <p className="text-4xl font-bold text-primary">
+                  ${totalDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+                <p className="text-muted-foreground mt-2">Total amount donated to date</p>
+              </div>
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={countyChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="county" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="amount" fill="#1a365d" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
 
