@@ -26,7 +26,7 @@ export const PersonalInfoSection = ({ control }: PersonalInfoSectionProps) => {
 
         <FormField
           control={control}
-          name="last_name"
+          name="last_org_name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Last/Organization Name</FormLabel>

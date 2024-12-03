@@ -25,7 +25,7 @@ const DonorSubmission = () => {
         county: data.county,
         donation_amount: data.donation_amount,
         first_name: data.first_name,
-        last_name: data.last_name,
+        last_org_name: data.last_org_name,
         city: data.city,
         state: data.state,
         zip: data.zip,
