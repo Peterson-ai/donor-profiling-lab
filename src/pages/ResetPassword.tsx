@@ -1,41 +1,42 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
 
-const Login = () => {
+const ResetPassword = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { signIn } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      await signIn(email, password);
-      navigate("/dashboard");
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
       });
+
+      if (error) throw error;
+
+      toast({
+        title: "Check your email",
+        description: "We've sent you a password reset link.",
+      });
+      
+      navigate("/login");
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Invalid email or password.",
+        description: "Failed to send reset password email. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const handleRegister = () => {
-    navigate("/register");
-    toast({
-      title: "Registration",
-      description: "Please create your account.",
-    });
   };
 
   return (
@@ -50,8 +51,10 @@ const Login = () => {
           className="w-24 h-24 mx-auto mb-4"
         />
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-center">BSA Donor Platform</h1>
-          <h2 className="text-xl text-center text-muted-foreground">Login</h2>
+          <h1 className="text-3xl font-bold text-center">Reset Password</h1>
+          <p className="text-center text-muted-foreground">
+            Enter your email address and we'll send you a link to reset your password.
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -66,43 +69,25 @@ const Login = () => {
               required
             />
           </div>
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="text-right">
-            <Link 
-              to="/reset-password"
-              className="text-sm text-primary hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          <Button type="submit" className="w-full">
-            Sign In
+          <Button 
+            type="submit" 
+            className="w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Sending..." : "Send Reset Link"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => navigate("/login")}
+          >
+            Back to Login
           </Button>
         </form>
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Don't have an account?</p>
-          <Button
-            variant="outline"
-            className="mt-2 w-full"
-            onClick={handleRegister}
-          >
-            Create Account
-          </Button>
-        </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default ResetPassword;
