@@ -2,14 +2,26 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control } from "react-hook-form";
-import { APPEAL_OPTIONS, STRUCTURE_OPTIONS, GIVING_CATEGORY_OPTIONS, COUNTY_OPTIONS } from "@/utils/donorUtils";
+import { APPEAL_OPTIONS, STRUCTURE_OPTIONS, GIVING_CATEGORY_OPTIONS, COUNTY_OPTIONS, generateAppealCode } from "@/utils/donorUtils";
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 
 interface DonorFormFieldsProps {
   control: Control<any>;
-  appealCode: string;
 }
 
-export const DonorFormFields = ({ control, appealCode }: DonorFormFieldsProps) => {
+export const DonorFormFields = ({ control }: DonorFormFieldsProps) => {
+  const { watch, setValue } = useFormContext();
+  const appealName = watch("appeal_name");
+  const year = watch("year");
+
+  useEffect(() => {
+    if (appealName && year) {
+      const generatedCode = generateAppealCode(appealName, year);
+      setValue("appeal_code", generatedCode);
+    }
+  }, [appealName, year, setValue]);
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
@@ -20,7 +32,7 @@ export const DonorFormFields = ({ control, appealCode }: DonorFormFieldsProps) =
             <FormItem>
               <FormLabel>Appeal Code</FormLabel>
               <FormControl>
-                <Input {...field} value={appealCode} readOnly className="bg-gray-100" />
+                <Input {...field} readOnly className="bg-gray-100" />
               </FormControl>
               <FormMessage />
             </FormItem>
