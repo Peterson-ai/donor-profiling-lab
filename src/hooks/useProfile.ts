@@ -17,34 +17,34 @@ export const useProfile = (user: User | null) => {
     if (!user?.id) return null;
 
     try {
-      const { data: existingProfile, error: fetchError } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (fetchError && fetchError.code === "PGRST116") {
+      if (error) throw error;
+
+      if (!data) {
         // Profile doesn't exist, create it
-        const { data: newProfile, error: insertError } = await supabase
+        const newProfile = {
+          id: user.id,
+          full_name: "",
+          phone: "",
+          organization: "",
+        };
+
+        const { data: createdProfile, error: insertError } = await supabase
           .from("profiles")
-          .insert([
-            {
-              id: user.id,
-              full_name: "",
-              phone: "",
-              organization: "",
-            },
-          ])
+          .insert([newProfile])
           .select()
           .single();
 
         if (insertError) throw insertError;
-        return newProfile;
-      } else if (fetchError) {
-        throw fetchError;
+        return createdProfile;
       }
 
-      return existingProfile;
+      return data;
     } catch (error) {
       console.error("Error loading profile:", error);
       toast.error("Failed to load profile data");
