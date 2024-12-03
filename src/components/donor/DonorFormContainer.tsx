@@ -11,6 +11,7 @@ const donorFormSchema = z.object({
   appeal_name: z.string(),
   structure: z.string(),
   giving_category: z.string(),
+  county: z.string(),
   donation_amount: z.number().min(0, "Amount must be positive"),
 });
 
@@ -30,6 +31,7 @@ export const DonorFormContainer = ({ onSubmit, isSubmitting }: DonorFormContaine
       appeal_name: "",
       structure: "",
       giving_category: "",
+      county: "",
       donation_amount: 0,
     },
   });
