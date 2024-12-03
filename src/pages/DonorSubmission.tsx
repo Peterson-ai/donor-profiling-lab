@@ -30,7 +30,7 @@ const DonorSubmission = () => {
         state: data.state,
         zip: data.zip,
         email: user.email,
-        profile_id: user.id,
+        user_id: user.id,
       };
 
       const { error } = await supabase
