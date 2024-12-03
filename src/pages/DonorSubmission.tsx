@@ -16,7 +16,6 @@ const DonorSubmission = () => {
     
     setIsSubmitting(true);
     try {
-      // Prepare donor data with only the fields that exist in donors table
       const donorData = {
         appeal_code: data.appeal_code,
         year: data.year,
@@ -25,6 +24,11 @@ const DonorSubmission = () => {
         giving_category: data.giving_category,
         county: data.county,
         donation_amount: data.donation_amount,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        city: data.city,
+        state: data.state,
+        zip: data.zip,
         email: user.email,
         profile_id: user.id,
       };

@@ -5,6 +5,7 @@ import { generateAppealCode } from "@/utils/donorUtils";
 import { AppealSection } from "./donor/fields/AppealSection";
 import { DonorTypeSection } from "./donor/fields/DonorTypeSection";
 import { DonationSection } from "./donor/fields/DonationSection";
+import { PersonalInfoSection } from "./donor/fields/PersonalInfoSection";
 
 interface DonorFormFieldsProps {
   control: Control<any>;
@@ -23,10 +24,11 @@ export const DonorFormFields = ({ control }: DonorFormFieldsProps) => {
   }, [appealName, year, setValue]);
 
   return (
-    <>
+    <div className="space-y-8">
       <AppealSection control={control} />
       <DonorTypeSection control={control} />
+      <PersonalInfoSection control={control} />
       <DonationSection control={control} />
-    </>
+    </div>
   );
 };
