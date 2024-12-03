@@ -5,6 +5,7 @@ export interface Donor {
   appeal_name: string;
   structure: string;
   giving_category: string;
+  county: string;
   last_org_name: string;
   first_name?: string;
   city: string;
