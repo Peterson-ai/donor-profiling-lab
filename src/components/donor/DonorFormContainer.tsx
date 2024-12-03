@@ -13,8 +13,8 @@ const donorFormSchema = z.object({
   giving_category: z.string(),
   county: z.string(),
   donation_amount: z.number().min(0, "Amount must be positive"),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
+  first_name: z.string().optional(), // Changed to optional
+  last_name: z.string().min(1, "Last/Organization name is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
   zip: z.string().min(5, "ZIP code must be at least 5 characters"),
