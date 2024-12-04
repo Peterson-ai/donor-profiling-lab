@@ -1,0 +1,106 @@
+-- Create campaigns table
+CREATE TABLE campaigns (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  description TEXT,
+  goal NUMERIC NOT NULL,
+  raised NUMERIC DEFAULT 0,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create donors table
+CREATE TABLE donors (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  appeal_code TEXT,
+  year INTEGER,
+  appeal_name TEXT,
+  structure TEXT,
+  giving_category TEXT,
+  last_name TEXT NOT NULL,
+  city TEXT,
+  state TEXT,
+  zip TEXT,
+  email TEXT,
+  donation_amount NUMERIC,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create donations table
+CREATE TABLE donations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  donor_id UUID REFERENCES donors(id),
+  campaign_id UUID REFERENCES campaigns(id),
+  amount NUMERIC NOT NULL,
+  frequency TEXT,
+  status TEXT DEFAULT 'pending',
+  payment_method TEXT,
+  transaction_id TEXT,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Add Row Level Security (RLS) policies
+ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY;
+ALTER TABLE donors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
+
+-- Policies for campaigns
+CREATE POLICY "Enable read access for all users" ON campaigns
+  FOR SELECT USING (true);
+
+CREATE POLICY "Enable insert for authenticated users only" ON campaigns
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable update for admin users" ON campaigns
+  FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
+
+-- Policies for donors
+CREATE POLICY "Enable read access for authenticated users" ON donors
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable insert for authenticated users" ON donors
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable update for admin users" ON donors
+  FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
+
+-- Policies for donations
+CREATE POLICY "Enable read access for authenticated users" ON donations
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable insert for authenticated users" ON donations
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable update for admin users" ON donations
+  FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
+
+-- Create functions to automatically update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Add triggers for updated_at
+CREATE TRIGGER update_campaigns_updated_at
+    BEFORE UPDATE ON campaigns
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_donors_updated_at
+    BEFORE UPDATE ON donors
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_donations_updated_at
+    BEFORE UPDATE ON donations
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
