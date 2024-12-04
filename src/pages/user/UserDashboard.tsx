@@ -2,9 +2,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Heart, Award, Calendar, LogOut } from "lucide-react";
+import { DollarSign, Heart, Award, Calendar, LogOut, Search } from "lucide-react";
 import { navigationItems } from "@/config/navigation";
 import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -67,13 +68,15 @@ const UserDashboard = () => {
       <div className="flex-1 ml-64">
         {/* Header */}
         <header className="flex items-center justify-between px-8 py-4 bg-[#0D1425] border-b border-gray-800">
-          <div className="flex items-center space-x-4">
-            <img 
-              src="/lovable-uploads/21caf5a2-65cb-46fb-ad61-4c8eb907c114.png" 
-              alt="BSA Logo" 
-              className="h-8 w-auto"
-            />
-            <span className="text-xl font-semibold">Scout Donor</span>
+          <div className="flex-1 max-w-xl">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input 
+                type="search"
+                placeholder="Search..."
+                className="w-full pl-10 bg-[#1A2235] border-gray-700 text-white placeholder:text-gray-400 focus:ring-[#6366F1]"
+              />
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-gray-300">{displayName}</span>
