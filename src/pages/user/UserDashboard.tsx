@@ -38,6 +38,15 @@ const UserDashboard = () => {
     <div className="min-h-screen bg-[#0A0F1C] text-white flex">
       {/* Navigation Sidebar */}
       <nav className="w-64 bg-[#0D1425] border-r border-gray-800 p-4 fixed h-full flex flex-col">
+        <div className="flex items-center space-x-3 mb-8">
+          <img 
+            src="/lovable-uploads/d73c5a4d-124a-4e2e-b3e8-4af49f90719d.png"
+            alt="BSA Logo" 
+            className="h-10 w-10"
+          />
+          <span className="text-lg font-semibold">Donor Portal</span>
+        </div>
+
         <div className="flex-1 space-y-4">
           {navigationItems.map((item) => {
             const Icon = item.icon;
