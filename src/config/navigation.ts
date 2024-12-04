@@ -1,5 +1,5 @@
 import { 
-  LayoutDashboard, 
+  Home, 
   DollarSign, 
   Flag, 
   Heart, 
@@ -11,21 +11,21 @@ import {
 export const navigationItems = [
   {
     title: "Dashboard",
-    icon: LayoutDashboard,
+    icon: Home,
     href: "/",
   },
   {
-    title: "Donate",
+    title: "$Donate",
     icon: DollarSign,
     href: "/donate",
   },
   {
-    title: "Campaigns",
+    title: "Campaign",
     icon: Flag,
     href: "/campaigns",
   },
   {
-    title: "Youth Needs",
+    title: "Needs",
     icon: Heart,
     href: "/youth-needs",
   },

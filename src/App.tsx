@@ -72,6 +72,46 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/campaigns"
+              element={
+                <ProtectedRoute>
+                  <div>Campaigns Page</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/youth-needs"
+              element={
+                <ProtectedRoute>
+                  <div>Youth Needs Page</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute>
+                  <div>Events Page</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/merit-badges"
+              element={
+                <ProtectedRoute>
+                  <div>Merit Badges Page</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <div>Settings Page</div>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Admin Routes */}
             <Route
