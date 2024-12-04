@@ -5,13 +5,24 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
+import { AdminRoute } from "@/components/AdminRoute";
+
+// Public Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
+
+// User Pages
+import UserDashboard from "./pages/user/UserDashboard";
+import DonationPage from "./pages/user/DonationPage";
 import DonorSubmission from "./pages/DonorSubmission";
+import Profile from "./pages/Profile";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import DonorList from "./pages/donors/DonorList";
+import Analytics from "./pages/Analytics";
+import DonorAnalytics from "./pages/donors/DonorAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -23,22 +34,25 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+
+            {/* User Routes */}
             <Route
-              path="/dashboard"
+              path="/"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <UserDashboard />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/profile"
+              path="/donate"
               element={
                 <ProtectedRoute>
-                  <Profile />
+                  <DonationPage />
                 </ProtectedRoute>
               }
             />
@@ -51,11 +65,45 @@ const App = () => (
               }
             />
             <Route
-              path="/"
+              path="/profile"
               element={
                 <ProtectedRoute>
-                  <Index />
+                  <Profile />
                 </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/donors"
+              element={
+                <AdminRoute>
+                  <DonorList />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <AdminRoute>
+                  <Analytics />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/donor-analytics"
+              element={
+                <AdminRoute>
+                  <DonorAnalytics />
+                </AdminRoute>
               }
             />
           </Routes>
