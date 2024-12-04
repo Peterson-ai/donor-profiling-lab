@@ -6,6 +6,7 @@ import { DollarSign, Heart, Award, Calendar, LogOut, Search } from "lucide-react
 import { navigationItems } from "@/config/navigation";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -88,7 +89,18 @@ const UserDashboard = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-300">{displayName}</span>
+            <Avatar className="h-10 w-10">
+              <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7" />
+              <AvatarFallback>
+                {displayName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </header>
+
+        <main className="p-8">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl font-bold">Welcome, {displayName}</h1>
             <Button 
               variant="secondary"
               onClick={() => navigate("/donate")}
@@ -97,10 +109,6 @@ const UserDashboard = () => {
               Make a Donation
             </Button>
           </div>
-        </header>
-
-        <main className="p-8">
-          <h1 className="text-2xl font-bold mb-8">Welcome, {displayName}</h1>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Stats Cards */}
