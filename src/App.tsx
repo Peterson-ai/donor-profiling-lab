@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminRoute } from "@/components/AdminRoute";
-import { Layout } from "@/components/Layout";
 
 // Public Pages
 import Login from "./pages/Login";
@@ -40,14 +39,12 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Protected Routes with Layout */}
+            {/* User Routes */}
             <Route
               path="/"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <UserDashboard />
-                  </Layout>
+                  <UserDashboard />
                 </ProtectedRoute>
               }
             />
@@ -55,9 +52,7 @@ const App = () => (
               path="/donate"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <DonationPage />
-                  </Layout>
+                  <DonationPage />
                 </ProtectedRoute>
               }
             />
@@ -65,9 +60,7 @@ const App = () => (
               path="/donor-submission"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <DonorSubmission />
-                  </Layout>
+                  <DonorSubmission />
                 </ProtectedRoute>
               }
             />
@@ -75,9 +68,7 @@ const App = () => (
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <Profile />
-                  </Layout>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
@@ -85,9 +76,7 @@ const App = () => (
               path="/campaigns"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <div>Campaigns Page</div>
-                  </Layout>
+                  <div>Campaigns Page</div>
                 </ProtectedRoute>
               }
             />
@@ -95,9 +84,7 @@ const App = () => (
               path="/youth-needs"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <div>Youth Needs Page</div>
-                  </Layout>
+                  <div>Youth Needs Page</div>
                 </ProtectedRoute>
               }
             />
@@ -105,9 +92,7 @@ const App = () => (
               path="/events"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <div>Events Page</div>
-                  </Layout>
+                  <div>Events Page</div>
                 </ProtectedRoute>
               }
             />
@@ -115,9 +100,7 @@ const App = () => (
               path="/merit-badges"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <div>Merit Badges Page</div>
-                  </Layout>
+                  <div>Merit Badges Page</div>
                 </ProtectedRoute>
               }
             />
@@ -125,21 +108,17 @@ const App = () => (
               path="/settings"
               element={
                 <ProtectedRoute>
-                  <Layout>
-                    <div>Settings Page</div>
-                  </Layout>
+                  <div>Settings Page</div>
                 </ProtectedRoute>
               }
             />
 
-            {/* Admin Routes with Layout */}
+            {/* Admin Routes */}
             <Route
               path="/admin"
               element={
                 <AdminRoute>
-                  <Layout>
-                    <AdminDashboard />
-                  </Layout>
+                  <AdminDashboard />
                 </AdminRoute>
               }
             />
@@ -147,9 +126,7 @@ const App = () => (
               path="/admin/donors"
               element={
                 <AdminRoute>
-                  <Layout>
-                    <DonorList />
-                  </Layout>
+                  <DonorList />
                 </AdminRoute>
               }
             />
@@ -157,9 +134,7 @@ const App = () => (
               path="/admin/analytics"
               element={
                 <AdminRoute>
-                  <Layout>
-                    <Analytics />
-                  </Layout>
+                  <Analytics />
                 </AdminRoute>
               }
             />
@@ -167,9 +142,7 @@ const App = () => (
               path="/admin/donor-analytics"
               element={
                 <AdminRoute>
-                  <Layout>
-                    <DonorAnalytics />
-                  </Layout>
+                  <DonorAnalytics />
                 </AdminRoute>
               }
             />
