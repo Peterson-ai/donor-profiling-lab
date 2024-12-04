@@ -2,13 +2,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Heart, Award, Calendar } from "lucide-react";
+import { DollarSign, Heart, Award, Calendar, LogOut } from "lucide-react";
 import { navigationItems } from "@/config/navigation";
 import { Link } from "react-router-dom";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { profile } = useProfile(user);
 
   if (!user) return null;
@@ -36,8 +36,8 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-[#0A0F1C] text-white flex">
       {/* Navigation Sidebar */}
-      <nav className="w-64 bg-[#0D1425] border-r border-gray-800 p-4 fixed h-full">
-        <div className="space-y-4">
+      <nav className="w-64 bg-[#0D1425] border-r border-gray-800 p-4 fixed h-full flex flex-col">
+        <div className="flex-1 space-y-4">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -52,6 +52,16 @@ const UserDashboard = () => {
             );
           })}
         </div>
+        
+        {/* Logout Button */}
+        <Button
+          variant="ghost"
+          className="w-full flex items-center space-x-3 text-gray-400 hover:text-white hover:bg-[#1A2235]"
+          onClick={() => signOut()}
+        >
+          <LogOut className="h-5 w-5" />
+          <span>Logout</span>
+        </Button>
       </nav>
 
       <div className="flex-1 ml-64">
