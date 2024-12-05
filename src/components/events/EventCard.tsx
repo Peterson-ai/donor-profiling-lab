@@ -42,9 +42,9 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
     },
   });
 
-  // Parse the ISO date strings to Date objects
-  const startDate = parseISO(event.startDate);
-  const endDate = parseISO(event.endDate);
+  // Add null checks and provide default dates if needed
+  const startDate = event.startDate ? parseISO(event.startDate) : new Date();
+  const endDate = event.endDate ? parseISO(event.endDate) : new Date();
 
   return (
     <div className="bg-[#1A2235] rounded-lg overflow-hidden">
