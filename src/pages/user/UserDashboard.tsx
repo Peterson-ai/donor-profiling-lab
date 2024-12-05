@@ -2,8 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
-import { DollarSign, Heart, Award, Calendar } from "lucide-react";
+import { Heart, Award, Calendar } from "lucide-react";
 import { UpcomingEvents } from "@/components/dashboard/UpcomingEvents";
+import { DonationStats } from "@/components/dashboard/DonationStats";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
@@ -16,36 +17,6 @@ const UserDashboard = () => {
   const { profile } = useProfile(user);
 
   console.log('UserDashboard: Current user and profile', { user, profile });
-
-  // Fetch user's donations from donors table
-  const { data: donorDonations } = useQuery({
-    queryKey: ['donor-donations', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('donors')
-        .select('donation_amount')
-        .eq('user_id', user?.id);
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user?.id,
-  });
-
-  // Fetch user's donations from campaigns
-  const { data: campaignDonations } = useQuery({
-    queryKey: ['campaign-donations', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('donations')
-        .select('amount')
-        .eq('donor_id', user?.id);
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user?.id,
-  });
 
   // Fetch active campaigns
   const { data: activeCampaigns } = useQuery({
@@ -77,11 +48,6 @@ const UserDashboard = () => {
     },
     enabled: !!user?.id,
   });
-
-  // Calculate total donations from both sources
-  const totalDonorDonations = donorDonations?.reduce((sum, donation) => sum + (donation.donation_amount || 0), 0) || 0;
-  const totalCampaignDonations = campaignDonations?.reduce((sum, donation) => sum + (donation.amount || 0), 0) || 0;
-  const totalDonations = totalDonorDonations + totalCampaignDonations;
 
   // Get random upcoming event
   const getRandomEvent = () => {
@@ -117,15 +83,7 @@ const UserDashboard = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Donations Card */}
-        <div className="bg-[#1A2235] p-6 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-400">Total Donations</h3>
-            <DollarSign className="text-[#6366F1] h-5 w-5" />
-          </div>
-          <p className="text-2xl font-bold">${totalDonations.toFixed(2)}</p>
-          <p className="text-sm text-gray-400">Your lifetime contributions</p>
-        </div>
+        <DonationStats />
 
         {/* Active Campaigns Card */}
         <div className="bg-[#1A2235] p-6 rounded-lg">
@@ -178,7 +136,7 @@ const UserDashboard = () => {
       <div className="bg-[#1A2235] rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Your Impact</h2>
         <p className="text-gray-400 mb-6">
-          Your total contribution of ${totalDonations.toFixed(2)} has helped:
+          Your contributions have helped:
         </p>
         
         <div className="space-y-4">
