@@ -19,7 +19,7 @@ const Login = () => {
     
     try {
       await signIn(email, password);
-      navigate("/dashboard");
+      navigate("/");
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
