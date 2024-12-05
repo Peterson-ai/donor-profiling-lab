@@ -17,14 +17,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('AuthProvider: Checking session...');
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('AuthProvider: Session check complete', { session });
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
     // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('AuthProvider: Auth state changed', { event: _event, session });
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -33,13 +36,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    console.log('AuthProvider: Signing in...');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    console.log('AuthProvider: Sign in successful');
   };
 
   const signOut = async () => {
+    console.log('AuthProvider: Signing out...');
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    console.log('AuthProvider: Sign out successful');
   };
 
   const isAdmin = () => {

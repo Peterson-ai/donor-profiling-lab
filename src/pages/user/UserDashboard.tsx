@@ -6,11 +6,17 @@ import { DollarSign, Heart, Award, Calendar } from "lucide-react";
 import { UpcomingEvents } from "@/components/dashboard/UpcomingEvents";
 
 const UserDashboard = () => {
+  console.log('UserDashboard: Component rendering');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile } = useProfile(user);
 
-  if (!user) return null;
+  console.log('UserDashboard: Current user and profile', { user, profile });
+
+  if (!user) {
+    console.log('UserDashboard: No user found, should redirect');
+    return null;
+  }
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Guest";
 
