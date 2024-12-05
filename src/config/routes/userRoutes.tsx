@@ -5,6 +5,7 @@ import DonationPage from "@/pages/user/DonationPage";
 import DonorSubmission from "@/pages/DonorSubmission";
 import Profile from "@/pages/Profile";
 import CampaignsPage from "@/pages/user/CampaignsPage";
+import EventsPage from "@/pages/user/EventsPage";
 
 export const userRoutes = [
   {
@@ -72,7 +73,7 @@ export const userRoutes = [
     element: (
       <ProtectedRoute>
         <AppLayout>
-          <div>Events Page</div>
+          <EventsPage />
         </AppLayout>
       </ProtectedRoute>
     )
