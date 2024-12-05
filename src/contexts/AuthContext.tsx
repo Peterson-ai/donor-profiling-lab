@@ -64,16 +64,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsSigningOut(true);
 
     try {
-      // First clear the session from memory
-      setUser(null);
+      // Attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut();
       
-      // Then attempt to sign out from Supabase
-      const { error } = await supabase.auth.signOut({ scope: 'local' });
       if (error) {
         console.error('AuthProvider: Sign out error', error);
         throw error;
       }
       
+      // Only clear the user state after successful sign out
+      setUser(null);
       console.log('AuthProvider: Sign out successful');
       toast.success('Successfully signed out');
       
@@ -81,7 +81,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.location.href = '/login';
     } catch (error: any) {
       console.error('AuthProvider: Sign out error', error);
-      toast.error('Failed to sign out properly. Please refresh the page.');
+      // If there's an error, we'll still try to clear the local state and redirect
+      setUser(null);
+      window.location.href = '/login';
+      toast.error('There was an issue signing out, but you have been logged out locally');
     } finally {
       setIsSigningOut(false);
     }
