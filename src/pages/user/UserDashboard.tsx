@@ -69,6 +69,40 @@ const UserDashboard = () => {
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Guest";
 
+  // Fetch total donations for impact calculations
+  const { data: donorDonations } = useQuery({
+    queryKey: ['donor-donations', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('donors')
+        .select('donation_amount')
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  const { data: campaignDonations } = useQuery({
+    queryKey: ['campaign-donations', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('donations')
+        .select('amount')
+        .eq('donor_id', user?.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Calculate total donations
+  const totalDonorDonations = donorDonations?.reduce((sum, donation) => sum + (donation.donation_amount || 0), 0) || 0;
+  const totalCampaignDonations = campaignDonations?.reduce((sum, donation) => sum + (donation.amount || 0), 0) || 0;
+  const totalDonations = totalDonorDonations + totalCampaignDonations;
+
   return (
     <div className="min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 mb-8">
