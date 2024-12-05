@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { toast } from "sonner";
 
 type AuthContextType = {
   user: User | null;
@@ -15,9 +16,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     console.log('AuthProvider: Checking session...');
+    
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('AuthProvider: Session check complete', { session });
@@ -32,29 +35,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
     console.log('AuthProvider: Signing in...');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    console.log('AuthProvider: Sign in successful');
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      console.log('AuthProvider: Sign in successful');
+      toast.success('Successfully signed in');
+    } catch (error: any) {
+      console.error('AuthProvider: Sign in error', error);
+      toast.error(error.message || 'Failed to sign in');
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    console.log('AuthProvider: Signing out...');
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    console.log('AuthProvider: Sign out successful');
+    if (isSigningOut) {
+      console.log('AuthProvider: Already signing out, skipping...');
+      return;
+    }
+
+    console.log('AuthProvider: Starting sign out process...');
+    setIsSigningOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      console.log('AuthProvider: Sign out successful');
+      setUser(null);
+      toast.success('Successfully signed out');
+    } catch (error: any) {
+      console.error('AuthProvider: Sign out error', error);
+      toast.error(error.message || 'Failed to sign out');
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   const isAdmin = () => {
     return user?.user_metadata?.role === 'admin';
   };
 
+  const value = {
+    user,
+    loading,
+    signIn,
+    signOut,
+    isAdmin,
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, isAdmin }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
