@@ -1,12 +1,12 @@
-import { format, parseISO } from "date-fns";
-import { MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { Event } from "@/types/event";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { EventHeader } from "./EventHeader";
+import { EventLocation } from "./EventLocation";
+import { EventProgress } from "./EventProgress";
+import { EventDates } from "./EventDates";
 
 interface EventCardProps {
   event: Event;
@@ -17,7 +17,6 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isRegistered = userRegistrations.includes(event.id);
-  const progress = (event.currentRegistrations / event.maxRegistrations) * 100;
 
   const registerMutation = useMutation({
     mutationFn: async () => {
@@ -42,10 +41,6 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
     },
   });
 
-  // Add null checks and provide default dates if needed
-  const startDate = event.startDate ? parseISO(event.startDate) : new Date();
-  const endDate = event.endDate ? parseISO(event.endDate) : new Date();
-
   return (
     <div className="bg-[#1A2235] rounded-lg overflow-hidden">
       <img 
@@ -54,40 +49,16 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
         className="w-full h-48 object-cover"
       />
       <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-semibold">{event.title}</h3>
-          <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-0">
-            {event.type}
-          </Badge>
-        </div>
-        
+        <EventHeader title={event.title} type={event.type} />
         <p className="text-gray-400 mb-4">{event.description}</p>
         
         <div className="space-y-4">
-          <div className="flex items-center text-gray-400">
-            <MapPin className="w-4 h-4 mr-2" />
-            {event.location}
-          </div>
-          
-          <div className="flex items-center text-gray-400">
-            <Users className="w-4 h-4 mr-2" />
-            {event.currentRegistrations} / {event.maxRegistrations} registered
-          </div>
-          
-          <div>
-            <div className="text-xs text-gray-400 mb-1">
-              Registration Progress
-            </div>
-            <Progress 
-              value={progress} 
-              className="h-2 bg-gray-700"
-              indicatorClassName="bg-emerald-500"
-            />
-          </div>
-          
-          <div className="text-sm text-gray-400">
-            {format(startDate, 'MMM dd, yyyy')} - {format(endDate, 'MMM dd, yyyy')}
-          </div>
+          <EventLocation location={event.location} />
+          <EventProgress 
+            currentRegistrations={event.currentRegistrations}
+            maxRegistrations={event.maxRegistrations}
+          />
+          <EventDates startDate={event.startDate} endDate={event.endDate} />
           
           <Button
             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
