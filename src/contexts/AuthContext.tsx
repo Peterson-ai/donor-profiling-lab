@@ -64,15 +64,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsSigningOut(true);
 
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // First clear the session from memory
+      setUser(null);
+      
+      // Then attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      if (error) {
+        console.error('AuthProvider: Sign out error', error);
+        throw error;
+      }
       
       console.log('AuthProvider: Sign out successful');
-      setUser(null);
       toast.success('Successfully signed out');
+      
+      // Force navigation to login page
+      window.location.href = '/login';
     } catch (error: any) {
       console.error('AuthProvider: Sign out error', error);
-      toast.error(error.message || 'Failed to sign out');
+      toast.error('Failed to sign out properly. Please refresh the page.');
     } finally {
       setIsSigningOut(false);
     }
