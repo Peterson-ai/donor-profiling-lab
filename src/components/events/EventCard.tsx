@@ -90,7 +90,7 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           </div>
           
           <Button
-            className="w-full"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
             onClick={() => registerMutation.mutate()}
             disabled={isRegistered || registerMutation.isPending}
           >
