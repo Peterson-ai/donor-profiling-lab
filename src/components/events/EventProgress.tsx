@@ -11,21 +11,16 @@ export const EventProgress = ({ currentRegistrations, maxRegistrations }: EventP
 
   return (
     <>
-      <div className="flex items-center text-gray-400">
+      <div className="flex items-center text-gray-400 mb-2">
         <Users className="w-4 h-4 mr-2" />
         {currentRegistrations} / {maxRegistrations} registered
       </div>
       
-      <div>
-        <div className="text-xs text-gray-400 mb-1">
-          Registration Progress
-        </div>
-        <Progress 
-          value={progress} 
-          className="h-2 bg-gray-700"
-          indicatorClassName="bg-emerald-500"
-        />
-      </div>
+      <Progress 
+        value={progress} 
+        className="h-2"
+        indicatorClassName="bg-blue-500"
+      />
     </>
   );
 };

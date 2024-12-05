@@ -19,8 +19,8 @@ INSERT INTO events (
   '2024-07-14',
   '2024-07-22',
   'Camp Crystal Lake, Pine Valley',
-  50,
-  47,
+  150,
+  87,
   'public/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png'
 ),
 (
