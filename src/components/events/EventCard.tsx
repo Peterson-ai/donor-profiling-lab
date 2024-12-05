@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -42,6 +42,10 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
     },
   });
 
+  // Parse the ISO date strings to Date objects
+  const startDate = parseISO(event.startDate);
+  const endDate = parseISO(event.endDate);
+
   return (
     <div className="bg-[#1A2235] rounded-lg overflow-hidden">
       <img 
@@ -82,7 +86,7 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           </div>
           
           <div className="text-sm text-gray-400">
-            {format(new Date(event.startDate), 'MMM dd, yyyy')} - {format(new Date(event.endDate), 'MMM dd, yyyy')}
+            {format(startDate, 'MMM dd, yyyy')} - {format(endDate, 'MMM dd, yyyy')}
           </div>
           
           <Button
