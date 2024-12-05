@@ -132,7 +132,9 @@ const UserDashboard = () => {
           </div>
 
           {/* Upcoming Events Section */}
-          <UpcomingEvents />
+          <div className="mb-8">
+            <UpcomingEvents />
+          </div>
 
           {/* Your Impact Section */}
           <div className="bg-[#1A2235] rounded-lg p-6">
