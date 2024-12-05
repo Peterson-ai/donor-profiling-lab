@@ -167,6 +167,7 @@ const CampaignsPage = () => {
                     <Progress 
                       value={calculateProgress(campaign.raised, campaign.goal)} 
                       className="h-2 bg-gray-700"
+                      indicatorClassName="bg-emerald-500"
                     />
                   </div>
                   <div className="flex justify-between text-sm">
