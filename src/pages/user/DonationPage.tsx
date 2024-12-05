@@ -38,7 +38,7 @@ const DonationPage = () => {
       matchPercentage: 95,
     },
     {
-      amount: 237,
+      amount: 386,
       label: "Enhanced Support",
       description: "Sponsors a Scout's camping trip and equipment",
       type: "enhanced",
