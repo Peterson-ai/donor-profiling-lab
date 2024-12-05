@@ -3,6 +3,7 @@ import { Event } from "@/types/event";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import { EventHeader } from "./EventHeader";
 import { EventLocation } from "./EventLocation";
 import { EventProgress } from "./EventProgress";
@@ -15,21 +16,22 @@ interface EventCardProps {
 
 export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const isRegistered = userRegistrations.includes(event.id);
 
   const registerMutation = useMutation({
     mutationFn: async () => {
+      if (!user) throw new Error("Must be logged in to register");
+      
       const { error } = await supabase
         .from('event_registrations')
-        .insert([{ event_id: event.id }]);
+        .insert([{ 
+          event_id: event.id,
+          user_id: user.id
+        }]);
       
       if (error) throw error;
-
-      await supabase
-        .from('events')
-        .update({ currentRegistrations: event.currentRegistrations + 1 })
-        .eq('id', event.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -39,6 +41,13 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
         description: `You are now registered for ${event.title}`,
       });
     },
+    onError: (error) => {
+      toast({
+        title: "Registration failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   });
 
   return (

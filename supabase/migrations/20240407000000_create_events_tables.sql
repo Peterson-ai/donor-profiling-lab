@@ -33,7 +33,32 @@ CREATE POLICY "Enable read access for all users" ON events
 
 -- Event registrations policies
 CREATE POLICY "Enable read access for authenticated users" ON event_registrations
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING (auth.uid() IS NOT NULL);
 
 CREATE POLICY "Enable insert for authenticated users" ON event_registrations
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK (
+    auth.uid() IS NOT NULL AND
+    auth.uid() = user_id
+  );
+
+-- Add trigger for updating current_registrations
+CREATE OR REPLACE FUNCTION update_event_registration_count()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    UPDATE events 
+    SET current_registrations = current_registrations + 1
+    WHERE id = NEW.event_id;
+  ELSIF TG_OP = 'DELETE' THEN
+    UPDATE events 
+    SET current_registrations = current_registrations - 1
+    WHERE id = OLD.event_id;
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_registration_count
+AFTER INSERT OR DELETE ON event_registrations
+FOR EACH ROW
+EXECUTE FUNCTION update_event_registration_count();
