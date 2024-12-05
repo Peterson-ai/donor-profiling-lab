@@ -1,4 +1,5 @@
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import AppLayout from "@/components/layout/AppLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
 import DonationPage from "@/pages/user/DonationPage";
 import DonorSubmission from "@/pages/DonorSubmission";
@@ -9,7 +10,9 @@ export const userRoutes = [
     path: "/",
     element: (
       <ProtectedRoute>
-        <UserDashboard />
+        <AppLayout>
+          <UserDashboard />
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -17,7 +20,9 @@ export const userRoutes = [
     path: "/donate",
     element: (
       <ProtectedRoute>
-        <DonationPage />
+        <AppLayout>
+          <DonationPage />
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -25,7 +30,9 @@ export const userRoutes = [
     path: "/donor-submission",
     element: (
       <ProtectedRoute>
-        <DonorSubmission />
+        <AppLayout>
+          <DonorSubmission />
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -33,7 +40,9 @@ export const userRoutes = [
     path: "/profile",
     element: (
       <ProtectedRoute>
-        <Profile />
+        <AppLayout>
+          <Profile />
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -41,7 +50,9 @@ export const userRoutes = [
     path: "/campaigns",
     element: (
       <ProtectedRoute>
-        <div>Campaigns Page</div>
+        <AppLayout>
+          <div>Campaigns Page</div>
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -49,7 +60,9 @@ export const userRoutes = [
     path: "/youth-needs",
     element: (
       <ProtectedRoute>
-        <div>Youth Needs Page</div>
+        <AppLayout>
+          <div>Youth Needs Page</div>
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -57,7 +70,9 @@ export const userRoutes = [
     path: "/events",
     element: (
       <ProtectedRoute>
-        <div>Events Page</div>
+        <AppLayout>
+          <div>Events Page</div>
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -65,7 +80,9 @@ export const userRoutes = [
     path: "/merit-badges",
     element: (
       <ProtectedRoute>
-        <div>Merit Badges Page</div>
+        <AppLayout>
+          <div>Merit Badges Page</div>
+        </AppLayout>
       </ProtectedRoute>
     )
   },
@@ -73,7 +90,9 @@ export const userRoutes = [
     path: "/settings",
     element: (
       <ProtectedRoute>
-        <div>Settings Page</div>
+        <AppLayout>
+          <div>Settings Page</div>
+        </AppLayout>
       </ProtectedRoute>
     )
   }

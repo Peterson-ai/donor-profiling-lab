@@ -1,4 +1,5 @@
 import { AdminRoute } from "@/components/AdminRoute";
+import AppLayout from "@/components/layout/AppLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import DonorList from "@/pages/donors/DonorList";
 import Analytics from "@/pages/Analytics";
@@ -9,7 +10,9 @@ export const adminRoutes = [
     path: "/admin",
     element: (
       <AdminRoute>
-        <AdminDashboard />
+        <AppLayout>
+          <AdminDashboard />
+        </AppLayout>
       </AdminRoute>
     )
   },
@@ -17,7 +20,9 @@ export const adminRoutes = [
     path: "/admin/donors",
     element: (
       <AdminRoute>
-        <DonorList />
+        <AppLayout>
+          <DonorList />
+        </AppLayout>
       </AdminRoute>
     )
   },
@@ -25,7 +30,9 @@ export const adminRoutes = [
     path: "/admin/analytics",
     element: (
       <AdminRoute>
-        <Analytics />
+        <AppLayout>
+          <Analytics />
+        </AppLayout>
       </AdminRoute>
     )
   },
@@ -33,7 +40,9 @@ export const adminRoutes = [
     path: "/admin/donor-analytics",
     element: (
       <AdminRoute>
-        <DonorAnalytics />
+        <AppLayout>
+          <DonorAnalytics />
+        </AppLayout>
       </AdminRoute>
     )
   }
