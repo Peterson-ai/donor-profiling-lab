@@ -4,6 +4,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { DollarSign, Heart, Award, Calendar } from "lucide-react";
 import { UpcomingEvents } from "@/components/dashboard/UpcomingEvents";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { format } from "date-fns";
 
 const UserDashboard = () => {
   console.log('UserDashboard: Component rendering');
@@ -12,6 +15,60 @@ const UserDashboard = () => {
   const { profile } = useProfile(user);
 
   console.log('UserDashboard: Current user and profile', { user, profile });
+
+  // Fetch user's donations
+  const { data: donations } = useQuery({
+    queryKey: ['donations', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('donations')
+        .select('*')
+        .eq('donor_id', user?.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Fetch active campaigns
+  const { data: activeCampaigns } = useQuery({
+    queryKey: ['campaigns', 'active'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch user's registered events
+  const { data: userEvents } = useQuery({
+    queryKey: ['events', 'registered', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('event_registrations')
+        .select(`
+          events (*)
+        `)
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      return data?.map(reg => reg.events) || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Calculate total donations
+  const totalDonations = donations?.reduce((sum, donation) => sum + donation.amount, 0) || 0;
+
+  // Get random upcoming event
+  const randomEvent = userEvents && userEvents.length > 0 
+    ? userEvents[Math.floor(Math.random() * userEvents.length)]
+    : null;
 
   if (!user) {
     console.log('UserDashboard: No user found, should redirect');
@@ -34,25 +91,27 @@ const UserDashboard = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Stats Cards */}
+        {/* Total Donations Card */}
         <div className="bg-[#1A2235] p-6 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-400">Total Donations</h3>
             <DollarSign className="text-[#6366F1] h-5 w-5" />
           </div>
-          <p className="text-2xl font-bold">$0</p>
+          <p className="text-2xl font-bold">${totalDonations.toFixed(2)}</p>
           <p className="text-sm text-gray-400">Your lifetime contributions</p>
         </div>
 
+        {/* Active Campaigns Card */}
         <div className="bg-[#1A2235] p-6 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-400">Active Campaigns</h3>
             <Heart className="text-[#6366F1] h-5 w-5" />
           </div>
-          <p className="text-2xl font-bold">3</p>
+          <p className="text-2xl font-bold">{activeCampaigns?.length || 0}</p>
           <p className="text-sm text-gray-400">Campaigns you can support</p>
         </div>
 
+        {/* Merit Badges Card */}
         <div className="bg-[#1A2235] p-6 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-400">Merit Badges</h3>
@@ -62,13 +121,25 @@ const UserDashboard = () => {
           <p className="text-sm text-gray-400">Badges in progress</p>
         </div>
 
+        {/* Next Event Card */}
         <div className="bg-[#1A2235] p-6 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-400">Next Event</h3>
             <Calendar className="text-[#6366F1] h-5 w-5" />
           </div>
-          <p className="text-xl font-bold">Summer Camp</p>
-          <p className="text-sm text-gray-400">July 15-22, 2024</p>
+          {randomEvent ? (
+            <>
+              <p className="text-xl font-bold">{randomEvent.title}</p>
+              <p className="text-sm text-gray-400">
+                {format(new Date(randomEvent.startDate), 'MMM dd, yyyy')}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xl font-bold">No Events</p>
+              <p className="text-sm text-gray-400">Register for an event</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -80,25 +151,27 @@ const UserDashboard = () => {
       {/* Your Impact Section */}
       <div className="bg-[#1A2235] rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Your Impact</h2>
-        <p className="text-gray-400 mb-6">Your total contribution of $0.00 has helped:</p>
+        <p className="text-gray-400 mb-6">
+          Your total contribution of ${totalDonations.toFixed(2)} has helped:
+        </p>
         
         <div className="space-y-4">
           <div className="bg-[#1E2943] p-4 rounded-lg">
             <div className="flex justify-between items-center">
               <span>Scouts Supported</span>
-              <span className="font-bold">0</span>
+              <span className="font-bold">{Math.floor(totalDonations / 100)}</span>
             </div>
           </div>
           <div className="bg-[#1E2943] p-4 rounded-lg">
             <div className="flex justify-between items-center">
               <span>Camping Trips Funded</span>
-              <span className="font-bold">0</span>
+              <span className="font-bold">{Math.floor(totalDonations / 500)}</span>
             </div>
           </div>
           <div className="bg-[#1E2943] p-4 rounded-lg">
             <div className="flex justify-between items-center">
               <span>Merit Badges Enabled</span>
-              <span className="font-bold">0</span>
+              <span className="font-bold">{Math.floor(totalDonations / 50)}</span>
             </div>
           </div>
         </div>
