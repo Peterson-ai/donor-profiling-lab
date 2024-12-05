@@ -7,6 +7,7 @@ import { UpcomingEvents } from "@/components/dashboard/UpcomingEvents";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { format } from "date-fns";
+import { Event } from "@/types/event";
 
 const UserDashboard = () => {
   console.log('UserDashboard: Component rendering');
@@ -46,7 +47,7 @@ const UserDashboard = () => {
   });
 
   // Fetch user's registered events
-  const { data: userEvents } = useQuery({
+  const { data: userEvents } = useQuery<Event[]>({
     queryKey: ['events', 'registered', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -57,7 +58,8 @@ const UserDashboard = () => {
         .eq('user_id', user?.id);
       
       if (error) throw error;
-      return data?.map(reg => reg.events) || [];
+      // Transform the data to get the events array
+      return data?.map(reg => reg.events as Event) || [];
     },
     enabled: !!user?.id,
   });
@@ -66,9 +68,17 @@ const UserDashboard = () => {
   const totalDonations = donations?.reduce((sum, donation) => sum + donation.amount, 0) || 0;
 
   // Get random upcoming event
-  const randomEvent = userEvents && userEvents.length > 0 
-    ? userEvents[Math.floor(Math.random() * userEvents.length)]
-    : null;
+  const getRandomEvent = () => {
+    if (!userEvents || userEvents.length === 0) return null;
+    const validEvents = userEvents.filter(event => 
+      event && new Date(event.startDate) >= new Date()
+    );
+    return validEvents.length > 0 
+      ? validEvents[Math.floor(Math.random() * validEvents.length)]
+      : null;
+  };
+
+  const randomEvent = getRandomEvent();
 
   if (!user) {
     console.log('UserDashboard: No user found, should redirect');
