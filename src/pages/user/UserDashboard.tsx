@@ -17,13 +17,28 @@ const UserDashboard = () => {
 
   console.log('UserDashboard: Current user and profile', { user, profile });
 
-  // Fetch user's donations
-  const { data: donations } = useQuery({
-    queryKey: ['donations', user?.id],
+  // Fetch user's donations from donors table
+  const { data: donorDonations } = useQuery({
+    queryKey: ['donor-donations', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('donors')
+        .select('donation_amount')
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Fetch user's donations from campaigns
+  const { data: campaignDonations } = useQuery({
+    queryKey: ['campaign-donations', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('donations')
-        .select('*')
+        .select('amount')
         .eq('donor_id', user?.id);
       
       if (error) throw error;
@@ -58,14 +73,15 @@ const UserDashboard = () => {
         .eq('user_id', user?.id);
       
       if (error) throw error;
-      // Transform the data to get the events array
-      return data?.map(reg => reg.events as Event) || [];
+      return data?.map(reg => (reg.events as unknown) as Event) || [];
     },
     enabled: !!user?.id,
   });
 
-  // Calculate total donations
-  const totalDonations = donations?.reduce((sum, donation) => sum + donation.amount, 0) || 0;
+  // Calculate total donations from both sources
+  const totalDonorDonations = donorDonations?.reduce((sum, donation) => sum + (donation.donation_amount || 0), 0) || 0;
+  const totalCampaignDonations = campaignDonations?.reduce((sum, donation) => sum + (donation.amount || 0), 0) || 0;
+  const totalDonations = totalDonorDonations + totalCampaignDonations;
 
   // Get random upcoming event
   const getRandomEvent = () => {
