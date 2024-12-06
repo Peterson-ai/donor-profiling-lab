@@ -4,7 +4,6 @@ import UserDashboard from "@/pages/user/UserDashboard";
 import DonationPage from "@/pages/user/DonationPage";
 import DonorSubmission from "@/pages/DonorSubmission";
 import Profile from "@/pages/Profile";
-import ProfileSetup from "@/pages/ProfileSetup";
 import CampaignsPage from "@/pages/user/CampaignsPage";
 import EventsPage from "@/pages/user/EventsPage";
 import Settings from "@/pages/Settings";
@@ -17,14 +16,6 @@ export const userRoutes = [
         <AppLayout>
           <UserDashboard />
         </AppLayout>
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/profile-setup",
-    element: (
-      <ProtectedRoute>
-        <ProfileSetup />
       </ProtectedRoute>
     )
   },
