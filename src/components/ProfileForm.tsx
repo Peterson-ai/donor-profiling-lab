@@ -152,7 +152,7 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
             type="button"
             variant="outline"
             onClick={onCancel}
-            className="bg-white text-black hover:bg-gray-100"
+            className="bg-white text-black hover:bg-primary hover:text-primary-foreground"
           >
             Cancel
           </Button>
