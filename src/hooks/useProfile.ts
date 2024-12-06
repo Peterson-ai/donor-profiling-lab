@@ -4,9 +4,13 @@ import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
 export type ProfileData = {
-  full_name: string;
+  first_name: string;
+  last_name: string;
   phone?: string;
   organization?: string;
+  city: string;
+  state: string;
+  zip: string;
 };
 
 export const useProfile = (user: User | null) => {
@@ -29,9 +33,13 @@ export const useProfile = (user: User | null) => {
         // Profile doesn't exist, create it
         const newProfile = {
           id: user.id,
-          full_name: "",
+          first_name: "",
+          last_name: "",
           phone: "",
           organization: "",
+          city: "",
+          state: "",
+          zip: "",
         };
 
         const { data: createdProfile, error: insertError } = await supabase
