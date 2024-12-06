@@ -19,27 +19,32 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" />;
   }
 
-  // Only check profile completion for non-settings pages
-  if (location.pathname !== '/settings') {
-    // Check if this is the first login (no profile data yet)
-    if (!profile) {
-      console.log('ProtectedRoute: No profile found, redirecting to settings');
-      return <Navigate to="/settings" />;
+  // If no profile exists, this is a new user - redirect to profile setup
+  if (!profile && location.pathname !== '/profile-setup') {
+    console.log('ProtectedRoute: New user detected, redirecting to profile setup');
+    return <Navigate to="/profile-setup" />;
+  }
+
+  // For existing users with profile
+  if (profile) {
+    // Allow access to settings page regardless of profile completion
+    if (location.pathname === '/settings') {
+      return <>{children}</>;
     }
 
-    // For subsequent logins, check if required fields are filled
+    // Check if profile is incomplete for all other pages
     const isProfileIncomplete = !profile.first_name || 
                               !profile.last_name || 
                               !profile.city || 
                               !profile.state || 
                               !profile.zip;
 
-    if (isProfileIncomplete) {
-      console.log('ProtectedRoute: Profile incomplete, redirecting to settings');
-      return <Navigate to="/settings" />;
+    if (isProfileIncomplete && location.pathname !== '/profile-setup') {
+      console.log('ProtectedRoute: Profile incomplete, redirecting to profile setup');
+      return <Navigate to="/profile-setup" />;
     }
   }
 
-  console.log('ProtectedRoute: User authenticated and profile exists, rendering children');
+  console.log('ProtectedRoute: User authenticated and profile complete, rendering children');
   return <>{children}</>;
 };
