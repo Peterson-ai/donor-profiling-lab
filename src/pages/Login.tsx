@@ -35,23 +35,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0A0F1C] relative">
+    <div className="min-h-screen flex items-center justify-center bg-white relative">
       <div className="absolute inset-0 opacity-5 bg-contain bg-center bg-no-repeat" 
            style={{ backgroundImage: "url('/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png')" }}>
       </div>
-      <div className="w-full max-w-md p-8 space-y-6 bg-[#0D1425] rounded-lg shadow-lg relative z-10">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg relative z-10">
         <img 
           src="/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png"
           alt="BSA Logo"
           className="w-24 h-24 mx-auto mb-4"
         />
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-center text-white">BSA Donor Platform</h1>
-          <h2 className="text-xl text-center text-gray-400">Login</h2>
+          <h1 className="text-3xl font-bold text-center text-gray-900">BSA Donor Platform</h1>
+          <h2 className="text-xl text-center text-gray-600">Login</h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-200">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700">
               Email
             </label>
             <Input
@@ -62,11 +62,11 @@ const Login = () => {
               required
               disabled={isLoading}
               placeholder="Enter your email"
-              className="bg-[#1A2235] border-gray-700 text-white"
+              className="bg-white border-gray-300 text-gray-900"
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-200">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700">
               Password
             </label>
             <Input
@@ -77,31 +77,31 @@ const Login = () => {
               required
               disabled={isLoading}
               placeholder="Enter your password"
-              className="bg-[#1A2235] border-gray-700 text-white"
+              className="bg-white border-gray-300 text-gray-900"
             />
           </div>
           <div className="text-right">
             <Link 
               to="/reset-password"
-              className="text-sm text-[#6366F1] hover:underline"
+              className="text-sm text-blue-600 hover:underline"
             >
               Forgot password?
             </Link>
           </div>
           <Button 
             type="submit" 
-            className="w-full bg-[#6366F1] hover:bg-[#5558DD] text-white" 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
         <div className="text-center">
-          <p className="text-sm text-gray-400">Don't have an account?</p>
+          <p className="text-sm text-gray-600">Don't have an account?</p>
           <Button
             type="button"
             variant="outline"
-            className="mt-2 w-full border-gray-700 text-gray-200 hover:bg-[#1A2235]"
+            className="mt-2 w-full border-gray-300 text-gray-700 hover:bg-gray-50"
             onClick={() => navigate("/register")}
             disabled={isLoading}
           >
