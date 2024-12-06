@@ -1,9 +1,13 @@
 -- Create profiles table
 CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id),
-  full_name TEXT,
+  first_name TEXT,
+  last_name TEXT,
   organization TEXT,
   phone TEXT,
+  city TEXT,
+  state TEXT,
+  zip TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
