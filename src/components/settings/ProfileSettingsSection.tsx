@@ -94,7 +94,7 @@ export const ProfileSettingsSection = () => {
               type="email"
               value={user?.email || ''}
               readOnly
-              className="bg-[#1A2235] border-gray-700 text-white"
+              className="bg-[#1A2235] border-gray-700 text-white opacity-50"
             />
           </div>
           <div className="space-y-2">
@@ -145,7 +145,7 @@ export const ProfileSettingsSection = () => {
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="w-full md:w-auto"
+            className="w-full md:w-auto bg-[#6366F1] hover:bg-[#5558DD]"
           >
             {isLoading ? "Saving..." : "Save Changes"}
           </Button>
