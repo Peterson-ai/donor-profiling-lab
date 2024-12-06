@@ -19,7 +19,7 @@ const Login = () => {
     
     try {
       await signIn(email, password);
-      navigate("/");
+      navigate("/"); // Directly navigate to home page after successful login
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",

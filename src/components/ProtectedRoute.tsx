@@ -19,7 +19,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" />;
   }
 
-  // Check if profile is incomplete and user is not already on the settings page
+  // Only redirect to settings if profile doesn't exist or is incomplete
   const isProfileIncomplete = !profile?.first_name || !profile?.last_name || !profile?.city || !profile?.state || !profile?.zip;
   if (isProfileIncomplete && location.pathname !== '/settings') {
     console.log('ProtectedRoute: Profile incomplete, redirecting to settings');
