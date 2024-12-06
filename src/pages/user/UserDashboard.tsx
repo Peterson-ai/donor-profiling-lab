@@ -11,12 +11,9 @@ import { format } from "date-fns";
 import { Event } from "@/types/event";
 
 const UserDashboard = () => {
-  console.log('UserDashboard: Component rendering');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { profile } = useProfile(user);
-
-  console.log('UserDashboard: Current user and profile', { user, profile });
 
   // Fetch active campaigns
   const { data: activeCampaigns } = useQuery({
@@ -67,7 +64,7 @@ const UserDashboard = () => {
     return null;
   }
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || "Guest";
+  const displayName = profile ? profile.first_name || user?.email?.split('@')[0] : "Guest";
 
   // Fetch total donations for impact calculations
   const { data: donorDonations } = useQuery({
