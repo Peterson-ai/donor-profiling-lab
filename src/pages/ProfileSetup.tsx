@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
-import { Button } from "@/components/ui/button";
 import { ProfileForm } from "@/components/ProfileForm";
 import { toast } from "sonner";
 
@@ -17,6 +16,7 @@ const ProfileSetup = () => {
     try {
       await updateProfile(data);
       toast.success("Profile setup completed!");
+      // Redirect to dashboard after successful profile setup
       navigate("/");
     } catch (error) {
       toast.error("Failed to set up profile");
