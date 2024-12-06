@@ -7,6 +7,7 @@ import Profile from "@/pages/Profile";
 import CampaignsPage from "@/pages/user/CampaignsPage";
 import EventsPage from "@/pages/user/EventsPage";
 import Settings from "@/pages/Settings";
+import ProfileSetup from "@/pages/ProfileSetup";
 
 export const userRoutes = [
   {
@@ -96,6 +97,14 @@ export const userRoutes = [
         <AppLayout>
           <Settings />
         </AppLayout>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/profile-setup",
+    element: (
+      <ProtectedRoute>
+        <ProfileSetup />
       </ProtectedRoute>
     )
   }
