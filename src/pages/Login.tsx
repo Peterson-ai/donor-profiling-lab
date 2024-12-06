@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +11,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,39 +20,48 @@ const Login = () => {
     try {
       await signIn(email, password);
       navigate("/");
-      toast.success("Welcome back!");
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
     } catch (error: any) {
       console.error("Login error:", error);
-      
-      // Handle specific error messages
-      const errorMessage = error?.message || "Invalid login credentials";
-      toast.error(errorMessage);
-      
-      // Clear password field on error
-      setPassword("");
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Please check your email and password and try again.",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleRegister = () => {
+    navigate("/register");
+    toast({
+      title: "Registration",
+      description: "Please create your account.",
+    });
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white relative">
+    <div className="min-h-screen flex items-center justify-center bg-background relative">
       <div className="absolute inset-0 opacity-5 bg-contain bg-center bg-no-repeat" 
            style={{ backgroundImage: "url('/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png')" }}>
       </div>
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg relative z-10">
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg relative z-10">
         <img 
           src="/lovable-uploads/981f166c-061c-421c-9ded-5dbab55ad9f3.png"
           alt="BSA Logo"
           className="w-24 h-24 mx-auto mb-4"
         />
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-center text-gray-900">BSA Donor Platform</h1>
-          <h2 className="text-xl text-center text-gray-600">Login</h2>
+          <h1 className="text-3xl font-bold text-center">BSA Donor Platform</h1>
+          <h2 className="text-xl text-center text-muted-foreground">Login</h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="text-sm font-medium">
               Email
             </label>
             <Input
@@ -62,11 +72,10 @@ const Login = () => {
               required
               disabled={isLoading}
               placeholder="Enter your email"
-              className="bg-white border-gray-300 text-gray-900"
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
             <Input
@@ -77,32 +86,26 @@ const Login = () => {
               required
               disabled={isLoading}
               placeholder="Enter your password"
-              className="bg-white border-gray-300 text-gray-900"
             />
           </div>
           <div className="text-right">
             <Link 
               to="/reset-password"
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               Forgot password?
             </Link>
           </div>
-          <Button 
-            type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
         <div className="text-center">
-          <p className="text-sm text-gray-600">Don't have an account?</p>
+          <p className="text-sm text-muted-foreground">Don't have an account?</p>
           <Button
-            type="button"
             variant="outline"
-            className="mt-2 w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-            onClick={() => navigate("/register")}
+            className="mt-2 w-full"
+            onClick={handleRegister}
             disabled={isLoading}
           >
             Create Account
