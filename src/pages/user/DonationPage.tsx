@@ -5,24 +5,23 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Heart, CreditCard, Building2, Wallet } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
-interface DonationOption {
-  amount: number;
-  label: string;
-  description: string;
-  type: string;
-  matchPercentage: number;
-}
+const COUNTIES = ["Miami-Dade", "Broward", "Monroe"] as const;
 
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [frequency, setFrequency] = useState("one-time");
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
+  const [selectedCounty, setSelectedCounty] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const donationOptions: DonationOption[] = [
+  const donationOptions = [
     {
       amount: 119,
       label: "Basic Support",
@@ -46,16 +45,56 @@ const DonationPage = () => {
     },
   ];
 
-  const handleDonation = (e: React.FormEvent) => {
+  const handleDonation = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to make a donation",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedCounty) {
+      toast({
+        title: "County Required",
+        description: "Please select a county for your donation",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const amount = selectedAmount || Number(customAmount);
     
-    toast({
-      title: "Thank you for your donation!",
-      description: `Your ${frequency} donation of $${amount} will help support our Scouts.`,
-    });
-    
-    navigate("/");
+    try {
+      const { error } = await supabase
+        .from('donors')
+        .insert([{
+          user_id: user.id,
+          email: user.email,
+          donation_amount: amount,
+          county: selectedCounty,
+          structure: "Individual",
+          giving_category: "Regular Donor"
+        }]);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Thank you for your donation!",
+        description: `Your ${frequency} donation of $${amount} will help support our Scouts in ${selectedCounty}.`,
+      });
+      
+      navigate("/");
+    } catch (error) {
+      console.error('Error submitting donation:', error);
+      toast({
+        title: "Error",
+        description: "There was an error processing your donation. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -118,6 +157,22 @@ const DonationPage = () => {
             </div>
 
             <div className="space-y-6">
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Select County</label>
+                <Select onValueChange={setSelectedCounty} value={selectedCounty}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="Select a county" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTIES.map((county) => (
+                      <SelectItem key={county} value={county}>
+                        {county}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div>
                 <label className="block text-sm text-gray-300 mb-2">Donation Frequency</label>
                 <div className="grid grid-cols-3 gap-4">
