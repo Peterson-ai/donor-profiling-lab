@@ -6,6 +6,7 @@ import DonorSubmission from "@/pages/DonorSubmission";
 import Profile from "@/pages/Profile";
 import CampaignsPage from "@/pages/user/CampaignsPage";
 import EventsPage from "@/pages/user/EventsPage";
+import Settings from "@/pages/Settings";
 
 export const userRoutes = [
   {
@@ -93,7 +94,7 @@ export const userRoutes = [
     element: (
       <ProtectedRoute>
         <AppLayout>
-          <div>Settings Page</div>
+          <Settings />
         </AppLayout>
       </ProtectedRoute>
     )
