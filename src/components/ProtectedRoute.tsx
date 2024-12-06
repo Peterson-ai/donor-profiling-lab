@@ -19,13 +19,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" />;
   }
 
-  // Check if profile is incomplete and user is not already on the settings page
-  const isProfileIncomplete = !profile?.first_name || !profile?.last_name || !profile?.city || !profile?.state || !profile?.zip;
-  if (isProfileIncomplete && location.pathname !== '/settings') {
-    console.log('ProtectedRoute: Profile incomplete, redirecting to settings');
+  // Only redirect to settings if this is a new user (no profile data exists)
+  const isNewUser = !profile?.first_name && !profile?.last_name;
+  if (isNewUser && location.pathname !== '/settings') {
+    console.log('ProtectedRoute: New user detected, redirecting to settings');
     return <Navigate to="/settings" />;
   }
 
-  console.log('ProtectedRoute: User authenticated and profile complete, rendering children');
+  console.log('ProtectedRoute: User authenticated and profile exists, rendering children');
   return <>{children}</>;
 };
