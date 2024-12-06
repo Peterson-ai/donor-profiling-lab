@@ -20,29 +20,22 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   // If no profile exists, this is a new user - redirect to profile setup
-  if (!profile && location.pathname !== '/profile-setup') {
+  if (!profile) {
     console.log('ProtectedRoute: New user detected, redirecting to profile setup');
     return <Navigate to="/profile-setup" />;
   }
 
-  // For existing users with profile
-  if (profile) {
-    // Allow access to settings page regardless of profile completion
-    if (location.pathname === '/settings') {
-      return <>{children}</>;
-    }
+  // For existing users with profile, check if profile is incomplete
+  const isProfileIncomplete = !profile.first_name || 
+                            !profile.last_name || 
+                            !profile.city || 
+                            !profile.state || 
+                            !profile.zip;
 
-    // Check if profile is incomplete for all other pages
-    const isProfileIncomplete = !profile.first_name || 
-                              !profile.last_name || 
-                              !profile.city || 
-                              !profile.state || 
-                              !profile.zip;
-
-    if (isProfileIncomplete && location.pathname !== '/profile-setup') {
-      console.log('ProtectedRoute: Profile incomplete, redirecting to profile setup');
-      return <Navigate to="/profile-setup" />;
-    }
+  // Only redirect to profile setup if the profile is incomplete and we're not already there
+  if (isProfileIncomplete && location.pathname !== '/profile-setup') {
+    console.log('ProtectedRoute: Profile incomplete, redirecting to profile setup');
+    return <Navigate to="/profile-setup" />;
   }
 
   console.log('ProtectedRoute: User authenticated and profile complete, rendering children');

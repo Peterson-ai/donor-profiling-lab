@@ -4,12 +4,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
+  const { profile } = useProfile(user);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -19,7 +21,10 @@ const Login = () => {
     
     try {
       await signIn(email, password);
+      
+      // Redirect to dashboard by default
       navigate("/");
+      
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
