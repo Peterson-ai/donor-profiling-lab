@@ -1,15 +1,15 @@
-import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-type AdminRouteProps = {
-  children: ReactNode;
-};
+export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
 
-export const AdminRoute = ({ children }: AdminRouteProps) => {
-  const { user } = useAuth();
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  if (!user || user.role !== "admin") {
+  // Check if user exists and has admin role
+  if (!user || user.user_metadata.role !== 'admin') {
     return <Navigate to="/login" />;
   }
 

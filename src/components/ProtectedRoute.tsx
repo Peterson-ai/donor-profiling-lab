@@ -1,25 +1,31 @@
-import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 
-type ProtectedRouteProps = {
-  children: ReactNode;
-};
-
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user } = useAuth();
+export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
   const { profile } = useProfile(user);
+  const location = useLocation();
+
+  console.log('ProtectedRoute: Checking auth state', { user, loading, profile });
+
+  if (loading) {
+    console.log('ProtectedRoute: Still loading...');
+    return <div>Loading...</div>;
+  }
 
   if (!user) {
+    console.log('ProtectedRoute: No user found, redirecting to login');
     return <Navigate to="/login" />;
   }
 
-  const isProfileIncomplete = profile && (!profile.first_name || !profile.last_name || !profile.city || !profile.state || !profile.zip);
-
-  if (isProfileIncomplete && window.location.pathname !== "/settings") {
+  // Check if profile is incomplete and user is not already on the settings page
+  const isProfileIncomplete = !profile?.first_name || !profile?.last_name || !profile?.city || !profile?.state || !profile?.zip;
+  if (isProfileIncomplete && location.pathname !== '/settings') {
+    console.log('ProtectedRoute: Profile incomplete, redirecting to settings');
     return <Navigate to="/settings" />;
   }
 
+  console.log('ProtectedRoute: User authenticated and profile complete, rendering children');
   return <>{children}</>;
 };
