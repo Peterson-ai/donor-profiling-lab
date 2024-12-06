@@ -13,11 +13,11 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
           <Routes>
             {publicRoutes.map((route) => (
               <Route key={route.path} {...route} />
@@ -29,9 +29,9 @@ const App = () => (
               <Route key={route.path} {...route} />
             ))}
           </Routes>
-        </TooltipProvider>
-      </AuthProvider>
-    </BrowserRouter>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
