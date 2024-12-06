@@ -47,7 +47,7 @@ const Register = () => {
       if (error) throw error;
 
       toast.success("Registration successful! Please check your email to verify your account.");
-      navigate("/login");
+      navigate("/profile-setup");
     } catch (error: any) {
       toast.error(error.message || "Failed to register");
     } finally {
