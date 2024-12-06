@@ -54,9 +54,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="first_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel className="text-white">First Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your first name" {...field} />
+                <Input placeholder="Enter your first name" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -68,9 +68,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="last_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
+              <FormLabel className="text-white">Last Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your last name" {...field} />
+                <Input placeholder="Enter your last name" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,9 +82,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="organization"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Organization</FormLabel>
+              <FormLabel className="text-white">Organization</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your organization" {...field} />
+                <Input placeholder="Enter your organization" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,9 +96,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel className="text-white">Phone Number</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your phone number" {...field} />
+                <Input placeholder="Enter your phone number" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,9 +110,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="city"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>City</FormLabel>
+              <FormLabel className="text-white">City</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your city" {...field} />
+                <Input placeholder="Enter your city" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,9 +124,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="state"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>State</FormLabel>
+              <FormLabel className="text-white">State</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your state" {...field} />
+                <Input placeholder="Enter your state" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -138,9 +138,9 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
           name="zip"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>ZIP Code</FormLabel>
+              <FormLabel className="text-white">ZIP Code</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your ZIP code" {...field} />
+                <Input placeholder="Enter your ZIP code" {...field} className="text-black" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -152,6 +152,7 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
             type="button"
             variant="outline"
             onClick={onCancel}
+            className="bg-white text-black hover:bg-gray-100"
           >
             Cancel
           </Button>
