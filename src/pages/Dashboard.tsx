@@ -26,7 +26,7 @@ const Dashboard = () => {
     enabled: !!user?.id,
   });
 
-  const displayName = profile?.full_name || user?.email || "Guest";
+  const displayName = profile ? `${profile.first_name} ${profile.last_name}` : user?.email || "Guest";
   const totalDonations = donations?.reduce((sum, donation) => sum + donation.donation_amount, 0) || 0;
 
   // Calculate donations by county
