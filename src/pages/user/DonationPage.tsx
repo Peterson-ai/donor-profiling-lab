@@ -4,10 +4,13 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Heart, CreditCard, Building2, Wallet } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { DonationOptions } from "@/components/donation/DonationOptions";
+import { PaymentMethods } from "@/components/donation/PaymentMethods";
+import { generateAppealCode } from "@/utils/donorUtils";
 
 const COUNTIES = ["Miami-Dade", "Broward", "Monroe"] as const;
 
@@ -66,6 +69,8 @@ const DonationPage = () => {
     }
 
     const amount = selectedAmount || Number(customAmount);
+    const currentYear = new Date().getFullYear();
+    const appealCode = generateAppealCode("Annual Appeal", currentYear);
     
     try {
       const { error } = await supabase
@@ -76,7 +81,14 @@ const DonationPage = () => {
           donation_amount: amount,
           county: selectedCounty,
           structure: "Individual",
-          giving_category: "Regular Donor"
+          giving_category: "Regular Donor",
+          appeal_code: appealCode,
+          appeal_name: "Annual Appeal",
+          year: currentYear,
+          last_org_name: user.email.split('@')[0], // Temporary placeholder
+          city: selectedCounty,
+          state: "Florida",
+          zip: "33101" // Default Miami zip code
         }]);
 
       if (error) throw error;
@@ -117,29 +129,11 @@ const DonationPage = () => {
               <p className="text-sm text-gray-300">Based on community needs and impact analysis</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              {donationOptions.map((option) => (
-                <button
-                  key={option.amount}
-                  onClick={() => setSelectedAmount(option.amount)}
-                  className={`p-4 rounded-lg border ${
-                    selectedAmount === option.amount
-                      ? "border-blue-500 bg-blue-500/10"
-                      : "border-gray-700 hover:border-gray-600 bg-gray-800"
-                  } text-left transition-all`}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-xl font-bold text-white">${option.amount}</span>
-                    <span className="text-sm text-emerald-400">{option.matchPercentage}% Match</span>
-                  </div>
-                  <p className="text-sm text-gray-300 mb-1">{option.description}</p>
-                  <div className="flex items-center gap-1 text-sm text-gray-400">
-                    <Heart size={14} />
-                    <span>{option.label}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            <DonationOptions 
+              options={donationOptions}
+              selectedAmount={selectedAmount}
+              onSelectAmount={setSelectedAmount}
+            />
 
             <div className="mb-8">
               <label className="block text-sm text-gray-300 mb-2">Custom Amount</label>
@@ -192,31 +186,10 @@ const DonationPage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">Payment Method</label>
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { id: "credit-card", label: "Credit Card", icon: CreditCard },
-                    { id: "bank-transfer", label: "Bank Transfer", icon: Building2 },
-                    { id: "paypal", label: "PayPal", icon: Wallet },
-                  ].map((method) => (
-                    <button
-                      key={method.id}
-                      onClick={() => setPaymentMethod(method.id)}
-                      className={`p-3 rounded-lg border ${
-                        paymentMethod === method.id
-                          ? "border-blue-500 bg-blue-500/10 text-white"
-                          : "border-gray-700 hover:border-gray-600 bg-gray-800 text-gray-300"
-                      } transition-all`}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <method.icon size={20} />
-                        <span className="text-sm">{method.label}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <PaymentMethods
+                selectedMethod={paymentMethod}
+                onSelectMethod={setPaymentMethod}
+              />
             </div>
 
             <Button
