@@ -15,7 +15,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (!user) return null;
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || "Guest";
+  const displayName = profile ? 
+    `${profile.first_name} ${profile.last_name}` : 
+    user?.email?.split('@')[0] || "Guest";
 
   return (
     <div className="min-h-screen bg-[#0A0F1C] text-white flex flex-col md:flex-row">
