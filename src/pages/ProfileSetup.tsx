@@ -1,25 +1,6 @@
 import { ProfileSettingsSection } from "@/components/settings/ProfileSettingsSection";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProfile } from "@/hooks/useProfile";
 
 const ProfileSetup = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { profile } = useProfile(user);
-
-  const handleGoToDashboard = () => {
-    // Only allow navigation if profile is complete
-    if (profile?.first_name && 
-        profile?.last_name && 
-        profile?.city && 
-        profile?.state && 
-        profile?.zip) {
-      navigate('/');
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#0A0F1C] p-6">
       <div className="max-w-3xl mx-auto">
@@ -30,20 +11,6 @@ const ProfileSetup = () => {
           </p>
         </div>
         <ProfileSettingsSection />
-        {profile?.first_name && 
-         profile?.last_name && 
-         profile?.city && 
-         profile?.state && 
-         profile?.zip && (
-          <div className="mt-6 flex justify-end">
-            <Button 
-              onClick={handleGoToDashboard}
-              className="bg-[#6366F1] hover:bg-[#5355E8]"
-            >
-              Go to Dashboard
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
