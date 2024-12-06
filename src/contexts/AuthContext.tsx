@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
-import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   user: User | null;
@@ -25,30 +24,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const checkUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      
-      // If no profile exists, it's a new user
-      if (!data) {
-        navigate('/profile-setup');
-      } else {
-        navigate('/');
-      }
-    } catch (error) {
-      console.error('Error checking user profile:', error);
-      // If there's an error, default to profile setup
-      navigate('/profile-setup');
-    }
-  };
 
   useEffect(() => {
     // Initialize auth state
@@ -57,10 +32,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          await checkUserProfile(session.user.id);
-        }
       } catch (error) {
         console.error("Error initializing auth:", error);
       } finally {
@@ -77,18 +48,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Auth state changed:", _event, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await checkUserProfile(session.user.id);
-      }
-      
       setLoading(false);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
