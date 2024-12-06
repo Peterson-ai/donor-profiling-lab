@@ -53,12 +53,12 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
 
         <FormField
           control={form.control}
-          name="phone"
+          name="organization"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number</FormLabel>
+              <FormLabel>Organization</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your phone number" {...field} />
+                <Input placeholder="Enter your organization" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -67,12 +67,12 @@ export const ProfileForm = ({ initialData, onSubmit, isLoading, onCancel }: Prof
 
         <FormField
           control={form.control}
-          name="organization"
+          name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Organization</FormLabel>
+              <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your organization" {...field} />
+                <Input placeholder="Enter your phone number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
