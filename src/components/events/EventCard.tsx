@@ -75,18 +75,18 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           <EventLocation location={event.location} />
           <EventProgress 
             currentRegistrations={event.current_registrations}
-            maxRegistrations={event.maxRegistrations}
+            maxRegistrations={event.max_registrations}
           />
           <EventDates startDate={event.startDate} endDate={event.endDate} />
           
           <Button
             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
             onClick={() => registerMutation.mutate()}
-            disabled={isRegistered || registerMutation.isPending || event.current_registrations >= event.maxRegistrations}
+            disabled={isRegistered || registerMutation.isPending || event.current_registrations >= event.max_registrations}
           >
             {isRegistered 
               ? "Already Registered" 
-              : event.current_registrations >= event.maxRegistrations 
+              : event.current_registrations >= event.max_registrations 
                 ? "Event Full" 
                 : "Register"}
           </Button>

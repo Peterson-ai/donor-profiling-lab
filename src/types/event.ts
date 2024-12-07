@@ -8,7 +8,7 @@ export interface Event {
   startDate: string;
   endDate: string;
   location: string;
-  maxRegistrations: number;
-  currentRegistrations: number;
+  max_registrations: number;
+  current_registrations: number;
   imageUrl: string;
 }
