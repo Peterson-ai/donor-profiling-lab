@@ -4,60 +4,73 @@ import CampaignCard from "@/components/campaigns/CampaignCard";
 import { Campaign } from "@/types/campaign";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const SAMPLE_CAMPAIGNS = [
+  {
+    id: "123e4567-e89b-12d3-a456-426614174000",
+    name: "Summer Camp Fund",
+    description: "Help send scouts to summer camp",
+    goal: 10000,
+    raised: 5000,
+    start_date: "2024-01-01",
+    end_date: "2024-12-31",
+    status: "active"
+  },
+  {
+    id: "123e4567-e89b-12d3-a456-426614174001",
+    name: "Equipment Drive",
+    description: "New camping equipment for troops",
+    goal: 5000,
+    raised: 1000,
+    start_date: "2024-02-01",
+    end_date: "2024-11-30",
+    status: "active"
+  },
+  {
+    id: "123e4567-e89b-12d3-a456-426614174002",
+    name: "Leadership Training",
+    description: "Support leadership development programs",
+    goal: 7500,
+    raised: 6000,
+    start_date: "2024-03-01",
+    end_date: "2024-10-31",
+    status: "active"
+  }
+] as Campaign[];
+
 const CampaignsPage = () => {
   const { data: campaigns, isLoading, error } = useQuery({
     queryKey: ["campaigns"],
     queryFn: async () => {
       console.log("Fetching campaigns...");
-      const { data, error } = await supabase
+      const { data: existingCampaigns, error: fetchError } = await supabase
         .from("campaigns")
         .select("*")
         .order("start_date", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching campaigns:", error);
-        throw error;
+      if (fetchError) {
+        console.error("Error fetching campaigns:", fetchError);
+        throw fetchError;
       }
       
-      // If no campaigns exist, return sample data with proper UUIDs
-      if (!data || data.length === 0) {
-        console.log("No campaigns found, using sample data");
-        return [
-          {
-            id: "123e4567-e89b-12d3-a456-426614174000",
-            name: "Summer Camp Fund",
-            description: "Help send scouts to summer camp",
-            goal: 10000,
-            raised: 5000,
-            start_date: "2024-01-01",
-            end_date: "2024-12-31",
-            status: "active"
-          },
-          {
-            id: "123e4567-e89b-12d3-a456-426614174001",
-            name: "Equipment Drive",
-            description: "New camping equipment for troops",
-            goal: 5000,
-            raised: 1000,
-            start_date: "2024-02-01",
-            end_date: "2024-11-30",
-            status: "active"
-          },
-          {
-            id: "123e4567-e89b-12d3-a456-426614174002",
-            name: "Leadership Training",
-            description: "Support leadership development programs",
-            goal: 7500,
-            raised: 6000,
-            start_date: "2024-03-01",
-            end_date: "2024-10-31",
-            status: "active"
-          }
-        ] as Campaign[];
+      // If no campaigns exist, insert sample data
+      if (!existingCampaigns || existingCampaigns.length === 0) {
+        console.log("No campaigns found, inserting sample data");
+        const { data: insertedData, error: insertError } = await supabase
+          .from("campaigns")
+          .insert(SAMPLE_CAMPAIGNS)
+          .select();
+
+        if (insertError) {
+          console.error("Error inserting sample campaigns:", insertError);
+          throw insertError;
+        }
+
+        console.log("Sample campaigns inserted:", insertedData);
+        return insertedData as Campaign[];
       }
 
-      console.log("Fetched campaigns:", data);
-      return data as Campaign[];
+      console.log("Fetched campaigns:", existingCampaigns);
+      return existingCampaigns as Campaign[];
     },
   });
 
