@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Heart } from "lucide-react";
@@ -11,8 +9,8 @@ import { supabase } from "@/lib/supabase";
 import { DonationOptions } from "@/components/donation/DonationOptions";
 import { PaymentMethods } from "@/components/donation/PaymentMethods";
 import { generateAppealCode } from "@/utils/donorUtils";
-
-const COUNTIES = ["Miami-Dade", "Broward", "Monroe"] as const;
+import { DonateButton } from "@/components/donation/DonateButton";
+import { Input } from "@/components/ui/input";
 
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -20,6 +18,7 @@ const DonationPage = () => {
   const [frequency, setFrequency] = useState("one-time");
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [selectedCounty, setSelectedCounty] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -68,7 +67,17 @@ const DonationPage = () => {
       return;
     }
 
-    const amount = selectedAmount || Number(customAmount);
+    const finalAmount = selectedAmount || Number(customAmount);
+    if (!finalAmount || finalAmount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please select or enter a valid donation amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     const currentYear = new Date().getFullYear();
     const appealCode = generateAppealCode("Annual Appeal", currentYear);
     
@@ -78,24 +87,25 @@ const DonationPage = () => {
         .insert([{
           user_id: user.id,
           email: user.email,
-          donation_amount: amount,
+          donation_amount: finalAmount,
           county: selectedCounty,
           structure: "Individual",
           giving_category: "Regular Donor",
           appeal_code: appealCode,
           appeal_name: "Annual Appeal",
           year: currentYear,
-          last_org_name: user.email.split('@')[0], // Temporary placeholder
+          first_name: user.user_metadata?.first_name || "Anonymous",
+          last_org_name: user.email.split('@')[0],
           city: selectedCounty,
           state: "Florida",
-          zip: "33101" // Default Miami zip code
+          zip: "33101"
         }]);
 
       if (error) throw error;
       
       toast({
         title: "Thank you for your donation!",
-        description: `Your ${frequency} donation of $${amount} will help support our Scouts in ${selectedCounty}.`,
+        description: `Your ${frequency} donation of $${finalAmount} will help support our Scouts in ${selectedCounty}.`,
       });
       
       navigate("/");
@@ -106,8 +116,22 @@ const DonationPage = () => {
         description: "There was an error processing your donation. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handleAmountSelect = (amount: number) => {
+    setSelectedAmount(amount);
+    setCustomAmount("");
+  };
+
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value);
+    setSelectedAmount(null);
+  };
+
+  const finalAmount = selectedAmount || (customAmount ? Number(customAmount) : null);
 
   return (
     <div className="container max-w-6xl mx-auto p-6">
@@ -132,7 +156,7 @@ const DonationPage = () => {
             <DonationOptions 
               options={donationOptions}
               selectedAmount={selectedAmount}
-              onSelectAmount={setSelectedAmount}
+              onSelectAmount={handleAmountSelect}
             />
 
             <div className="mb-8">
@@ -140,10 +164,7 @@ const DonationPage = () => {
               <Input
                 type="number"
                 value={customAmount}
-                onChange={(e) => {
-                  setCustomAmount(e.target.value);
-                  setSelectedAmount(null);
-                }}
+                onChange={handleCustomAmountChange}
                 placeholder="Enter amount"
                 className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
               />
@@ -158,7 +179,7 @@ const DonationPage = () => {
                     <SelectValue placeholder="Select a county" />
                   </SelectTrigger>
                   <SelectContent>
-                    {COUNTIES.map((county) => (
+                    {["Miami-Dade", "Broward", "Monroe"].map((county) => (
                       <SelectItem key={county} value={county}>
                         {county}
                       </SelectItem>
@@ -192,13 +213,11 @@ const DonationPage = () => {
               />
             </div>
 
-            <Button
+            <DonateButton
+              amount={finalAmount}
+              isSubmitting={isSubmitting}
               onClick={handleDonation}
-              className="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white"
-              size="lg"
-            >
-              Donate
-            </Button>
+            />
           </Card>
         </div>
 
