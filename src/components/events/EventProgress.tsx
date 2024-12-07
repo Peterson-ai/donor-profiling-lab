@@ -7,13 +7,16 @@ interface EventProgressProps {
 }
 
 export const EventProgress = ({ currentRegistrations, maxRegistrations }: EventProgressProps) => {
-  const progress = (currentRegistrations / maxRegistrations) * 100;
+  // Ensure we have valid numbers and calculate the percentage
+  const safeCurrentRegistrations = Number(currentRegistrations) || 0;
+  const safeMaxRegistrations = Number(maxRegistrations) || 1; // Prevent division by zero
+  const progress = Math.min((safeCurrentRegistrations / safeMaxRegistrations) * 100, 100);
 
   return (
     <>
       <div className="flex items-center text-gray-400 mb-2">
         <Users className="w-4 h-4 mr-2" />
-        <span>{currentRegistrations} / {maxRegistrations} registered</span>
+        <span>{safeCurrentRegistrations} / {safeMaxRegistrations} registered</span>
       </div>
       
       <Progress 
