@@ -46,6 +46,7 @@ const CampaignCard = ({ campaign }: CampaignCardProps) => {
   };
 
   const progress = calculateProgress(campaign.raised, campaign.goal);
+  const displayStatus = progress >= 100 ? 'completed' : campaign.status;
 
   return (
     <>
@@ -54,10 +55,10 @@ const CampaignCard = ({ campaign }: CampaignCardProps) => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-white">{campaign.name}</h2>
             <Badge 
-              className={`${getStatusColor(campaign.status)} border-0`}
+              className={`${getStatusColor(displayStatus)} border-0`}
               variant="outline"
             >
-              {campaign.status}
+              {displayStatus}
             </Badge>
           </div>
 
