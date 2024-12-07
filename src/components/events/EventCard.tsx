@@ -50,6 +50,35 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
     }
   });
 
+  const cancelRegistrationMutation = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Must be logged in to cancel registration");
+      
+      const { error } = await supabase
+        .from('event_registrations')
+        .delete()
+        .eq('event_id', event.id)
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['userRegistrations'] });
+      toast({
+        title: "Registration cancelled",
+        description: `You have cancelled your registration for ${event.title}`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Cancellation failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
   return (
     <div className="bg-[#1A2235] rounded-lg overflow-hidden">
       <img 
@@ -69,13 +98,23 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           />
           <EventDates startDate={event.startDate} endDate={event.endDate} />
           
-          <Button
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
-            onClick={() => registerMutation.mutate()}
-            disabled={isRegistered || registerMutation.isPending}
-          >
-            {isRegistered ? "Already Registered" : "Register"}
-          </Button>
+          {isRegistered ? (
+            <Button
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium"
+              onClick={() => cancelRegistrationMutation.mutate()}
+              disabled={cancelRegistrationMutation.isPending}
+            >
+              {cancelRegistrationMutation.isPending ? "Cancelling..." : "Cancel Registration"}
+            </Button>
+          ) : (
+            <Button
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
+              onClick={() => registerMutation.mutate()}
+              disabled={registerMutation.isPending}
+            >
+              {registerMutation.isPending ? "Registering..." : "Register"}
+            </Button>
+          )}
         </div>
       </div>
     </div>
