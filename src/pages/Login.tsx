@@ -18,30 +18,24 @@ const Login = () => {
     setIsLoading(true);
     
     try {
+      console.log("Attempting to sign in with email:", email);
       await signIn(email, password);
-      navigate("/"); // Directly navigate to home page after successful login
+      console.log("Sign in successful");
+      navigate("/");
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Login error details:", error);
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Please check your email and password and try again.",
+        description: error.message || "Please check your email and password and try again.",
       });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleRegister = () => {
-    navigate("/register");
-    toast({
-      title: "Registration",
-      description: "Please create your account.",
-    });
   };
 
   return (
@@ -105,7 +99,7 @@ const Login = () => {
           <Button
             variant="outline"
             className="mt-2 w-full"
-            onClick={handleRegister}
+            onClick={() => navigate("/register")}
             disabled={isLoading}
           >
             Create Account
