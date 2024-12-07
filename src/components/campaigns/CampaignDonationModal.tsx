@@ -69,7 +69,7 @@ export const CampaignDonationModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#1A2235] border-gray-800">
         <DialogHeader>
-          <DialogTitle>Donate to {campaign.name}</DialogTitle>
+          <DialogTitle className="text-gray-100">Donate to {campaign.name}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6">
