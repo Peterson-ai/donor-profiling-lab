@@ -37,14 +37,22 @@ export const CampaignDonationModal = ({
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
+      console.log("Processing donation for campaign:", campaign);
+      const { data, error } = await supabase
         .from("campaigns")
         .update({ 
           raised: campaign.raised + Number(amount)
         })
-        .eq("id", campaign.id);
+        .eq("id", campaign.id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating campaign:", error);
+        throw error;
+      }
+
+      console.log("Updated campaign data:", data);
 
       toast({
         title: "Thank you for your donation!",
