@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Event } from "@/types/event";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +8,6 @@ import { EventHeader } from "./EventHeader";
 import { EventLocation } from "./EventLocation";
 import { EventProgress } from "./EventProgress";
 import { EventDates } from "./EventDates";
-import { EventRegistrationButtons } from "./EventRegistrationButtons";
 
 interface EventCardProps {
   event: Event;
@@ -50,35 +50,6 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
     }
   });
 
-  const cancelRegistrationMutation = useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error("Must be logged in to cancel registration");
-      
-      const { error } = await supabase
-        .from('event_registrations')
-        .delete()
-        .eq('event_id', event.id)
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['userRegistrations'] });
-      toast({
-        title: "Registration cancelled",
-        description: `You have cancelled your registration for ${event.title}`,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Cancellation failed",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  });
-
   return (
     <div className="bg-[#1A2235] rounded-lg overflow-hidden">
       <img 
@@ -98,11 +69,13 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           />
           <EventDates startDate={event.startDate} endDate={event.endDate} />
           
-          <EventRegistrationButtons
-            isRegistered={isRegistered}
-            registerMutation={registerMutation}
-            cancelRegistrationMutation={cancelRegistrationMutation}
-          />
+          <Button
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
+            onClick={() => registerMutation.mutate()}
+            disabled={isRegistered || registerMutation.isPending}
+          >
+            {isRegistered ? "Already Registered" : "Register"}
+          </Button>
         </div>
       </div>
     </div>
