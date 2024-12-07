@@ -12,7 +12,12 @@ const CampaignsPage = () => {
         .select("*")
         .order("start_date", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching campaigns:", error);
+        throw error;
+      }
+      
+      console.log("Fetched campaigns:", data);
       return data as Campaign[];
     },
   });
