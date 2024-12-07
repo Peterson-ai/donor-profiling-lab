@@ -59,6 +59,19 @@ CREATE TABLE donors (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add RLS policies for donors
+ALTER TABLE donors ENABLE ROW LEVEL SECURITY;
+
+-- Policies for donors
+CREATE POLICY "Enable read access for authenticated users" ON donors
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable insert for authenticated users" ON donors
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable update for admin users" ON donors
+  FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
+
 -- Create donations table
 CREATE TABLE donations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -74,43 +87,36 @@ CREATE TABLE donations (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add Row Level Security (RLS) policies
-ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY;
-ALTER TABLE donors ENABLE ROW LEVEL SECURITY;
+-- Add Row Level Security (RLS)
 ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
-
--- Policies for campaigns
-CREATE POLICY "campaigns_select_policy" ON campaigns
-  FOR SELECT USING (true);
-
-CREATE POLICY "campaigns_insert_policy" ON campaigns
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "campaigns_update_policy" ON campaigns
-  FOR UPDATE USING (auth.role() = 'authenticated');
-
--- Policies for donors
-CREATE POLICY "Enable read access for authenticated users" ON donors
-  FOR SELECT USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Enable insert for authenticated users" ON donors
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Enable update for admin users" ON donors
-  FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
 
 -- Updated Policies for donations
 CREATE POLICY "Enable read access for authenticated users" ON donations
   FOR SELECT USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Enable insert for authenticated users" ON donations
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Enable insert for own donations" ON donations
+  FOR INSERT WITH CHECK (
+    auth.role() = 'authenticated' AND
+    donor_id IN (
+      SELECT id FROM donors WHERE user_id = auth.uid()
+    )
+  );
 
-CREATE POLICY "Enable update for authenticated users" ON donations
-  FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Enable update for own donations" ON donations
+  FOR UPDATE USING (
+    auth.role() = 'authenticated' AND
+    donor_id IN (
+      SELECT id FROM donors WHERE user_id = auth.uid()
+    )
+  );
 
-CREATE POLICY "Enable delete for authenticated users" ON donations
-  FOR DELETE USING (auth.role() = 'authenticated');
+CREATE POLICY "Enable delete for own donations" ON donations
+  FOR DELETE USING (
+    auth.role() = 'authenticated' AND
+    donor_id IN (
+      SELECT id FROM donors WHERE user_id = auth.uid()
+    )
+  );
 
 -- Create functions to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
