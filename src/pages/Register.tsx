@@ -23,33 +23,48 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Validate password match
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      setIsLoading(false);
-      return;
-    }
-
-    // Validate password strength
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      toast.error(passwordError);
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const { error } = await supabase.auth.signUp({
+      // Validate password match
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+
+      // Validate password strength
+      const passwordError = validatePassword(password);
+      if (passwordError) {
+        toast.error(passwordError);
+        return;
+      }
+
+      console.log("Attempting to register with email:", email);
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Registration error:", error);
+        if (error.message.includes("network")) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          toast.error(error.message || "Failed to register");
+        }
+        return;
+      }
 
-      toast.success("Registration successful!");
-      navigate("/profile-setup");
+      console.log("Registration response:", data);
+      
+      if (data?.user) {
+        toast.success("Registration successful! Please check your email to confirm your account.");
+        navigate("/login");
+      }
     } catch (error: any) {
-      toast.error(error.message || "Failed to register");
+      console.error("Unexpected error during registration:", error);
+      toast.error("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -75,6 +90,7 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="bg-[#1A2235] border-gray-700 text-white"
               required
+              disabled={isLoading}
             />
           </div>
           
@@ -89,6 +105,7 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="bg-[#1A2235] border-gray-700 text-white"
               required
+              disabled={isLoading}
               minLength={6}
             />
             <p className="text-xs text-gray-400">Must be at least 6 characters long</p>
@@ -105,6 +122,7 @@ const Register = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="bg-[#1A2235] border-gray-700 text-white"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -123,6 +141,7 @@ const Register = () => {
               variant="outline"
               className="mt-2 w-full border-gray-700 text-gray-200 hover:bg-[#1A2235]"
               onClick={() => navigate("/login")}
+              disabled={isLoading}
             >
               Back to Login
             </Button>
