@@ -17,7 +17,7 @@ const CampaignCard = ({ campaign }: CampaignCardProps) => {
   const queryClient = useQueryClient();
 
   const calculateProgress = (raised: number, goal: number) => {
-    return ((raised || 0) / goal) * 100;
+    return Math.min(((raised || 0) / goal) * 100, 100);
   };
 
   const formatCurrency = (amount: number) => {
@@ -45,6 +45,8 @@ const CampaignCard = ({ campaign }: CampaignCardProps) => {
     queryClient.invalidateQueries({ queryKey: ["campaigns"] });
   };
 
+  const progress = calculateProgress(campaign.raised, campaign.goal);
+
   return (
     <>
       <Card className="bg-[#1A2235] border-gray-800 overflow-hidden">
@@ -67,10 +69,10 @@ const CampaignCard = ({ campaign }: CampaignCardProps) => {
             <div>
               <div className="mb-2">
                 <div className="text-xs text-gray-400 mb-1">
-                  {calculateProgress(campaign.raised, campaign.goal).toFixed(1)}% Complete
+                  {progress.toFixed(1)}% Complete
                 </div>
                 <Progress 
-                  value={calculateProgress(campaign.raised, campaign.goal)} 
+                  value={progress} 
                   className="h-2 bg-gray-700"
                   indicatorClassName="bg-emerald-500"
                 />

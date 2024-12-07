@@ -37,12 +37,12 @@ export const CampaignDonationModal = ({
 
     setIsSubmitting(true);
     try {
-      console.log("Processing donation for campaign:", campaign);
+      console.log("Processing donation for campaign:", campaign.id);
+      const newAmount = campaign.raised + Number(amount);
+      
       const { data, error } = await supabase
         .from("campaigns")
-        .update({ 
-          raised: campaign.raised + Number(amount)
-        })
+        .update({ raised: newAmount })
         .eq("id", campaign.id)
         .select()
         .single();
