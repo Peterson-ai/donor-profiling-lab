@@ -99,15 +99,18 @@ CREATE POLICY "Enable insert for authenticated users" ON donors
 CREATE POLICY "Enable update for admin users" ON donors
   FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
 
--- Policies for donations
+-- Updated Policies for donations
 CREATE POLICY "Enable read access for authenticated users" ON donations
   FOR SELECT USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Enable insert for authenticated users" ON donations
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
-CREATE POLICY "Enable update for admin users" ON donations
-  FOR UPDATE USING (auth.role() = 'authenticated' AND auth.jwt()->>'role' = 'admin');
+CREATE POLICY "Enable update for authenticated users" ON donations
+  FOR UPDATE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable delete for authenticated users" ON donations
+  FOR DELETE USING (auth.role() = 'authenticated');
 
 -- Create functions to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
