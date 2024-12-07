@@ -31,13 +31,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     console.log("AuthProvider: Initializing");
     
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("AuthProvider: Initial session retrieved", { session });
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        // Get initial session
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("AuthProvider: Initial session retrieved", { session });
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error("Error getting initial session:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const {
@@ -59,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log("Attempting sign in for:", email);
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -70,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw error;
       }
       
-      console.log("Sign in successful");
+      console.log("Sign in successful", data);
       toast.success("Successfully signed in!");
       navigate("/");
     } catch (error) {

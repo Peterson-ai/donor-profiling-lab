@@ -17,18 +17,21 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    storageKey: 'supabase-auth',
+    storage: window.localStorage
   },
   db: {
     schema: 'public'
   }
 });
 
-// Test the connection
-supabase.from('profiles').select('count', { count: 'exact', head: true })
-  .then(() => {
+// Test the connection and properly handle the Promise
+(async () => {
+  try {
+    await supabase.from('profiles').select('count', { count: 'exact', head: true });
     console.log('Successfully connected to Supabase');
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Error connecting to Supabase:', error);
-  });
+  }
+})();
