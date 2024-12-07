@@ -87,15 +87,16 @@ CREATE TABLE donations (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add Row Level Security (RLS)
+-- Enable RLS
 ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
 
--- Policies for donations table
+-- Drop existing policies if they exist
 DROP POLICY IF EXISTS "Enable read access for authenticated users" ON donations;
-DROP POLICY IF EXISTS "Enable insert for own donations" ON donations;
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON donations;
 DROP POLICY IF EXISTS "Enable update for own donations" ON donations;
 DROP POLICY IF EXISTS "Enable delete for own donations" ON donations;
 
+-- Create new policies
 CREATE POLICY "Enable read access for authenticated users" ON donations
   FOR SELECT USING (auth.role() = 'authenticated');
 
@@ -104,7 +105,7 @@ CREATE POLICY "Enable insert for authenticated users" ON donations
 
 CREATE POLICY "Enable update for own donations" ON donations
   FOR UPDATE USING (
-    auth.role() = 'authenticated' AND
+    auth.role() = 'authenticated' AND 
     donor_id IN (
       SELECT id FROM donors WHERE user_id = auth.uid()
     )
@@ -112,7 +113,7 @@ CREATE POLICY "Enable update for own donations" ON donations
 
 CREATE POLICY "Enable delete for own donations" ON donations
   FOR DELETE USING (
-    auth.role() = 'authenticated' AND
+    auth.role() = 'authenticated' AND 
     donor_id IN (
       SELECT id FROM donors WHERE user_id = auth.uid()
     )
