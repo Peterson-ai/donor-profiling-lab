@@ -17,19 +17,32 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
+    console.log("Attempting login with email:", email);
+    
     try {
       await signIn(email, password);
-      navigate("/"); // Directly navigate to home page after successful login
+      console.log("Login successful");
+      navigate("/");
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Login error details:", {
+        error,
+        message: error.message,
+        details: error.details,
+      });
+      
+      let errorMessage = "Please check your email and password and try again.";
+      if (error.message?.includes("Invalid login credentials")) {
+        errorMessage = "Invalid email or password. Please try again.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Please check your email and password and try again.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
