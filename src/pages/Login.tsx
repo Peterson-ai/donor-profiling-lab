@@ -4,11 +4,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -16,21 +19,34 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setEmailNotConfirmed(false);
     
     try {
       await signIn(email, password);
-      navigate("/"); // Directly navigate to home page after successful login
+      navigate("/");
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
     } catch (error: any) {
       console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Please check your email and password and try again.",
-      });
+      
+      // Check if the error is due to unconfirmed email
+      if (error.message?.includes('email_not_confirmed') || 
+          error?.body?.includes('email_not_confirmed')) {
+        setEmailNotConfirmed(true);
+        toast({
+          variant: "destructive",
+          title: "Email Not Verified",
+          description: "Please check your email and verify your account before logging in.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: "Please check your email and password and try again.",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -59,6 +75,16 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-center">BSA Donor Platform</h1>
           <h2 className="text-xl text-center text-muted-foreground">Login</h2>
         </div>
+
+        {emailNotConfirmed && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Please verify your email address before logging in. Check your inbox for the verification link.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
