@@ -1,29 +1,56 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Heart } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { DonationOptions } from "@/components/donation/DonationOptions";
+import { PaymentMethods } from "@/components/donation/PaymentMethods";
 import { generateAppealCode } from "@/utils/donorUtils";
-import { DonationForm } from "@/components/donation/DonationForm";
-import { DonationImpact } from "@/components/donation/DonationImpact";
-import { useProfile } from "@/hooks/useProfile";
+
+const COUNTIES = ["Miami-Dade", "Broward", "Monroe"] as const;
 
 const DonationPage = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [customAmount, setCustomAmount] = useState("");
+  const [frequency, setFrequency] = useState("one-time");
+  const [paymentMethod, setPaymentMethod] = useState("credit-card");
+  const [selectedCounty, setSelectedCounty] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: profile } = useProfile();
 
-  const handleDonation = async (data: {
-    amount: number;
-    frequency: string;
-    paymentMethod: string;
-    selectedCounty: string;
-  }) => {
-    if (!user || !profile) {
+  const donationOptions = [
+    {
+      amount: 119,
+      label: "Basic Support",
+      description: "Provides essential supplies for one Scout",
+      type: "basic",
+      matchPercentage: 90,
+    },
+    {
+      amount: 158,
+      label: "Regular Support",
+      description: "Funds a Scout's monthly activities and badges",
+      type: "regular",
+      matchPercentage: 95,
+    },
+    {
+      amount: 386,
+      label: "Enhanced Support",
+      description: "Sponsors a Scout's camping trip and equipment",
+      type: "enhanced",
+      matchPercentage: 85,
+    },
+  ];
+
+  const handleDonation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
       toast({
         title: "Please sign in",
         description: "You need to be signed in to make a donation",
@@ -32,7 +59,16 @@ const DonationPage = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    if (!selectedCounty) {
+      toast({
+        title: "County Required",
+        description: "Please select a county for your donation",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const amount = selectedAmount || Number(customAmount);
     const currentYear = new Date().getFullYear();
     const appealCode = generateAppealCode("Annual Appeal", currentYear);
     
@@ -42,25 +78,24 @@ const DonationPage = () => {
         .insert([{
           user_id: user.id,
           email: user.email,
-          donation_amount: data.amount,
-          county: data.selectedCounty,
+          donation_amount: amount,
+          county: selectedCounty,
           structure: "Individual",
           giving_category: "Regular Donor",
           appeal_code: appealCode,
           appeal_name: "Annual Appeal",
           year: currentYear,
-          first_name: profile.first_name,
-          last_org_name: profile.last_name,
-          city: profile.city,
-          state: profile.state,
-          zip: profile.zip
+          last_org_name: user.email.split('@')[0], // Temporary placeholder
+          city: selectedCounty,
+          state: "Florida",
+          zip: "33101" // Default Miami zip code
         }]);
 
       if (error) throw error;
       
       toast({
         title: "Thank you for your donation!",
-        description: `Your ${data.frequency} donation of $${data.amount} will help support our Scouts in ${data.selectedCounty}.`,
+        description: `Your ${frequency} donation of $${amount} will help support our Scouts in ${selectedCounty}.`,
       });
       
       navigate("/");
@@ -71,8 +106,6 @@ const DonationPage = () => {
         description: "There was an error processing your donation. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -96,12 +129,95 @@ const DonationPage = () => {
               <p className="text-sm text-gray-300">Based on community needs and impact analysis</p>
             </div>
 
-            <DonationForm onSubmit={handleDonation} isSubmitting={isSubmitting} />
+            <DonationOptions 
+              options={donationOptions}
+              selectedAmount={selectedAmount}
+              onSelectAmount={setSelectedAmount}
+            />
+
+            <div className="mb-8">
+              <label className="block text-sm text-gray-300 mb-2">Custom Amount</label>
+              <Input
+                type="number"
+                value={customAmount}
+                onChange={(e) => {
+                  setCustomAmount(e.target.value);
+                  setSelectedAmount(null);
+                }}
+                placeholder="Enter amount"
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
+              />
+              <p className="text-sm text-gray-400 mt-1">Could provide essential supplies and badges</p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Select County</label>
+                <Select onValueChange={setSelectedCounty} value={selectedCounty}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="Select a county" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTIES.map((county) => (
+                      <SelectItem key={county} value={county}>
+                        {county}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Donation Frequency</label>
+                <div className="grid grid-cols-3 gap-4">
+                  {["one-time", "monthly", "yearly"].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setFrequency(option)}
+                      className={`p-3 rounded-lg border ${
+                        frequency === option
+                          ? "border-blue-500 bg-blue-500/10 text-white"
+                          : "border-gray-700 hover:border-gray-600 bg-gray-800 text-gray-300"
+                      } transition-all capitalize`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <PaymentMethods
+                selectedMethod={paymentMethod}
+                onSelectMethod={setPaymentMethod}
+              />
+            </div>
+
+            <Button
+              onClick={handleDonation}
+              className="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white"
+              size="lg"
+            >
+              Donate
+            </Button>
           </Card>
         </div>
 
         <div className="md:col-span-1">
-          <DonationImpact />
+          <Card className="p-6 bg-gray-900 border-gray-700">
+            <h2 className="font-semibold mb-4 text-white">Your Impact</h2>
+            <div className="space-y-4">
+              {[
+                { label: "Help provide Scout uniforms", icon: "👕" },
+                { label: "Support merit badge activities", icon: "🏅" },
+                { label: "Contribute to camping equipment", icon: "⛺" },
+              ].map((impact, index) => (
+                <div key={index} className="flex items-center gap-3 text-gray-300">
+                  <span className="text-xl">{impact.icon}</span>
+                  <span className="text-sm">{impact.label}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
       </div>
     </div>
