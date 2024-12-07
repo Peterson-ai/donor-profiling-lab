@@ -32,6 +32,16 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
         }]);
       
       if (error) throw error;
+
+      // Update the events table with new registration count
+      const { error: updateError } = await supabase
+        .from('events')
+        .update({ 
+          current_registrations: event.current_registrations + 1 
+        })
+        .eq('id', event.id);
+      
+      if (updateError) throw updateError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -64,7 +74,7 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
         <div className="space-y-4">
           <EventLocation location={event.location} />
           <EventProgress 
-            currentRegistrations={event.currentRegistrations}
+            currentRegistrations={event.current_registrations}
             maxRegistrations={event.maxRegistrations}
           />
           <EventDates startDate={event.startDate} endDate={event.endDate} />
@@ -72,9 +82,13 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           <Button
             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
             onClick={() => registerMutation.mutate()}
-            disabled={isRegistered || registerMutation.isPending}
+            disabled={isRegistered || registerMutation.isPending || event.current_registrations >= event.maxRegistrations}
           >
-            {isRegistered ? "Already Registered" : "Register"}
+            {isRegistered 
+              ? "Already Registered" 
+              : event.current_registrations >= event.maxRegistrations 
+                ? "Event Full" 
+                : "Register"}
           </Button>
         </div>
       </div>
