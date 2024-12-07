@@ -3,14 +3,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Heart } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { DonationOptions } from "@/components/donation/DonationOptions";
-import { PaymentMethods } from "@/components/donation/PaymentMethods";
 import { generateAppealCode } from "@/utils/donorUtils";
-import { DonateButton } from "@/components/donation/DonateButton";
-import { Input } from "@/components/ui/input";
+import { DonationForm } from "@/components/donation/DonationForm";
 
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -22,30 +18,6 @@ const DonationPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  const donationOptions = [
-    {
-      amount: 119,
-      label: "Basic Support",
-      description: "Provides essential supplies for one Scout",
-      type: "basic",
-      matchPercentage: 90,
-    },
-    {
-      amount: 158,
-      label: "Regular Support",
-      description: "Funds a Scout's monthly activities and badges",
-      type: "regular",
-      matchPercentage: 95,
-    },
-    {
-      amount: 386,
-      label: "Enhanced Support",
-      description: "Sponsors a Scout's camping trip and equipment",
-      type: "enhanced",
-      matchPercentage: 85,
-    },
-  ];
 
   const handleDonation = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +54,8 @@ const DonationPage = () => {
     const appealCode = generateAppealCode("Annual Appeal", currentYear);
     
     try {
-      const { error } = await supabase
+      // First, create or get the donor record
+      const { data: donorData, error: donorError } = await supabase
         .from('donors')
         .insert([{
           user_id: user.id,
@@ -99,9 +72,29 @@ const DonationPage = () => {
           city: selectedCounty,
           state: "Florida",
           zip: "33101"
+        }])
+        .select()
+        .single();
+
+      if (donorError) throw donorError;
+
+      // Then, create the donation record
+      const { error: donationError } = await supabase
+        .from('donations')
+        .insert([{
+          donor_id: donorData.id,
+          amount: finalAmount,
+          frequency: frequency,
+          status: 'completed',
+          payment_method: paymentMethod,
+          metadata: {
+            county: selectedCounty,
+            appeal_code: appealCode,
+            year: currentYear
+          }
         }]);
 
-      if (error) throw error;
+      if (donationError) throw donationError;
       
       toast({
         title: "Thank you for your donation!",
@@ -131,8 +124,6 @@ const DonationPage = () => {
     setSelectedAmount(null);
   };
 
-  const finalAmount = selectedAmount || (customAmount ? Number(customAmount) : null);
-
   return (
     <div className="container max-w-6xl mx-auto p-6">
       <div className="text-center mb-8">
@@ -153,70 +144,19 @@ const DonationPage = () => {
               <p className="text-sm text-gray-300">Based on community needs and impact analysis</p>
             </div>
 
-            <DonationOptions 
-              options={donationOptions}
+            <DonationForm
               selectedAmount={selectedAmount}
-              onSelectAmount={handleAmountSelect}
-            />
-
-            <div className="mb-8">
-              <label className="block text-sm text-gray-300 mb-2">Custom Amount</label>
-              <Input
-                type="number"
-                value={customAmount}
-                onChange={handleCustomAmountChange}
-                placeholder="Enter amount"
-                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
-              />
-              <p className="text-sm text-gray-400 mt-1">Could provide essential supplies and badges</p>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">Select County</label>
-                <Select onValueChange={setSelectedCounty} value={selectedCounty}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
-                    <SelectValue placeholder="Select a county" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["Miami-Dade", "Broward", "Monroe"].map((county) => (
-                      <SelectItem key={county} value={county}>
-                        {county}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">Donation Frequency</label>
-                <div className="grid grid-cols-3 gap-4">
-                  {["one-time", "monthly", "yearly"].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => setFrequency(option)}
-                      className={`p-3 rounded-lg border ${
-                        frequency === option
-                          ? "border-blue-500 bg-blue-500/10 text-white"
-                          : "border-gray-700 hover:border-gray-600 bg-gray-800 text-gray-300"
-                      } transition-all capitalize`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <PaymentMethods
-                selectedMethod={paymentMethod}
-                onSelectMethod={setPaymentMethod}
-              />
-            </div>
-
-            <DonateButton
-              amount={finalAmount}
+              customAmount={customAmount}
+              frequency={frequency}
+              paymentMethod={paymentMethod}
+              selectedCounty={selectedCounty}
               isSubmitting={isSubmitting}
-              onClick={handleDonation}
+              onAmountSelect={handleAmountSelect}
+              onCustomAmountChange={handleCustomAmountChange}
+              onFrequencyChange={setFrequency}
+              onPaymentMethodChange={setPaymentMethod}
+              onCountyChange={setSelectedCounty}
+              onSubmit={handleDonation}
             />
           </Card>
         </div>
