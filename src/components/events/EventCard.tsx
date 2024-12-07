@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Event } from "@/types/event";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +7,7 @@ import { EventHeader } from "./EventHeader";
 import { EventLocation } from "./EventLocation";
 import { EventProgress } from "./EventProgress";
 import { EventDates } from "./EventDates";
+import { EventRegistrationButtons } from "./EventRegistrationButtons";
 
 interface EventCardProps {
   event: Event;
@@ -98,23 +98,11 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           />
           <EventDates startDate={event.startDate} endDate={event.endDate} />
           
-          <Button
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
-            onClick={() => registerMutation.mutate()}
-            disabled={isRegistered || registerMutation.isPending}
-          >
-            {isRegistered ? "Already Registered" : registerMutation.isPending ? "Registering..." : "Register"}
-          </Button>
-
-          {isRegistered && (
-            <Button
-              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium"
-              onClick={() => cancelRegistrationMutation.mutate()}
-              disabled={cancelRegistrationMutation.isPending}
-            >
-              {cancelRegistrationMutation.isPending ? "Cancelling..." : "Cancel Registration"}
-            </Button>
-          )}
+          <EventRegistrationButtons
+            isRegistered={isRegistered}
+            registerMutation={registerMutation}
+            cancelRegistrationMutation={cancelRegistrationMutation}
+          />
         </div>
       </div>
     </div>
