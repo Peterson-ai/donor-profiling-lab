@@ -80,7 +80,7 @@ export const CampaignDonationModal = ({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="bg-gray-800 border-gray-700"
+              className="bg-gray-800 border-gray-700 text-white font-semibold"
             />
           </div>
 
