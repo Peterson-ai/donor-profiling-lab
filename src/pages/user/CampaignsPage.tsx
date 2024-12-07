@@ -41,36 +41,51 @@ const CampaignsPage = () => {
   const { data: campaigns, isLoading, error } = useQuery({
     queryKey: ["campaigns"],
     queryFn: async () => {
-      console.log("Fetching campaigns...");
-      const { data: existingCampaigns, error: fetchError } = await supabase
-        .from("campaigns")
-        .select("*")
-        .order("start_date", { ascending: false });
-
-      if (fetchError) {
-        console.error("Error fetching campaigns:", fetchError);
-        throw fetchError;
-      }
-      
-      // If no campaigns exist, insert sample data
-      if (!existingCampaigns || existingCampaigns.length === 0) {
-        console.log("No campaigns found, inserting sample data");
-        const { data: insertedData, error: insertError } = await supabase
+      try {
+        console.log("Fetching campaigns...");
+        const { data: existingCampaigns, error: fetchError } = await supabase
           .from("campaigns")
-          .insert(SAMPLE_CAMPAIGNS)
-          .select();
+          .select("*")
+          .order("start_date", { ascending: false });
 
-        if (insertError) {
-          console.error("Error inserting sample campaigns:", insertError);
-          throw insertError;
+        if (fetchError) {
+          console.error("Error fetching campaigns:", fetchError);
+          throw fetchError;
+        }
+        
+        // If no campaigns exist, insert sample data
+        if (!existingCampaigns || existingCampaigns.length === 0) {
+          console.log("No campaigns found, inserting sample data");
+          
+          // Insert campaigns one by one to handle potential RLS issues
+          const insertedCampaigns = [];
+          for (const campaign of SAMPLE_CAMPAIGNS) {
+            const { data: insertedData, error: insertError } = await supabase
+              .from("campaigns")
+              .insert(campaign)
+              .select()
+              .single();
+
+            if (insertError) {
+              console.error("Error inserting campaign:", insertError);
+              continue;
+            }
+
+            if (insertedData) {
+              insertedCampaigns.push(insertedData);
+            }
+          }
+
+          console.log("Sample campaigns inserted:", insertedCampaigns);
+          return insertedCampaigns as Campaign[];
         }
 
-        console.log("Sample campaigns inserted:", insertedData);
-        return insertedData as Campaign[];
+        console.log("Fetched campaigns:", existingCampaigns);
+        return existingCampaigns as Campaign[];
+      } catch (error) {
+        console.error("Error in CampaignsPage:", error);
+        throw error;
       }
-
-      console.log("Fetched campaigns:", existingCampaigns);
-      return existingCampaigns as Campaign[];
     },
   });
 
