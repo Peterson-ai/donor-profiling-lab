@@ -90,17 +90,17 @@ CREATE TABLE donations (
 -- Add Row Level Security (RLS)
 ALTER TABLE donations ENABLE ROW LEVEL SECURITY;
 
--- Updated Policies for donations
+-- Policies for donations table
+DROP POLICY IF EXISTS "Enable read access for authenticated users" ON donations;
+DROP POLICY IF EXISTS "Enable insert for own donations" ON donations;
+DROP POLICY IF EXISTS "Enable update for own donations" ON donations;
+DROP POLICY IF EXISTS "Enable delete for own donations" ON donations;
+
 CREATE POLICY "Enable read access for authenticated users" ON donations
   FOR SELECT USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Enable insert for own donations" ON donations
-  FOR INSERT WITH CHECK (
-    auth.role() = 'authenticated' AND
-    donor_id IN (
-      SELECT id FROM donors WHERE user_id = auth.uid()
-    )
-  );
+CREATE POLICY "Enable insert for authenticated users" ON donations
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 CREATE POLICY "Enable update for own donations" ON donations
   FOR UPDATE USING (
