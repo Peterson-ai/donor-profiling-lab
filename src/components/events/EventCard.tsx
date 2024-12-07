@@ -98,21 +98,21 @@ export const EventCard = ({ event, userRegistrations }: EventCardProps) => {
           />
           <EventDates startDate={event.startDate} endDate={event.endDate} />
           
-          {isRegistered ? (
+          <Button
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
+            onClick={() => registerMutation.mutate()}
+            disabled={isRegistered || registerMutation.isPending}
+          >
+            {isRegistered ? "Already Registered" : registerMutation.isPending ? "Registering..." : "Register"}
+          </Button>
+
+          {isRegistered && (
             <Button
               className="w-full bg-red-500 hover:bg-red-600 text-white font-medium"
               onClick={() => cancelRegistrationMutation.mutate()}
               disabled={cancelRegistrationMutation.isPending}
             >
               {cancelRegistrationMutation.isPending ? "Cancelling..." : "Cancel Registration"}
-            </Button>
-          ) : (
-            <Button
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium"
-              onClick={() => registerMutation.mutate()}
-              disabled={registerMutation.isPending}
-            >
-              {registerMutation.isPending ? "Registering..." : "Register"}
             </Button>
           )}
         </div>
