@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface AuthContextType {
   user: User | null;
@@ -56,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     console.log("Attempting sign in for:", email);
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -64,39 +66,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (error) {
         console.error("Sign in error:", error);
+        toast.error(error.message);
         throw error;
       }
       
       console.log("Sign in successful");
+      toast.success("Successfully signed in!");
+      navigate("/");
     } catch (error) {
       console.error("Sign in error:", error);
+      toast.error("Failed to sign in. Please try again.");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
     console.log("Attempting sign out");
+    setLoading(true);
     try {
-      // First clear the local state
-      setUser(null);
-      setSession(null);
-      
-      // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Error signing out:", error);
+        toast.error("Error signing out");
         throw error;
       }
       
+      // Clear the local state
+      setUser(null);
+      setSession(null);
+      
       console.log("Sign out successful");
-      // Navigate to login page after successful logout
+      toast.success("Successfully signed out");
       navigate("/login");
     } catch (error) {
       console.error("Error during sign out:", error);
       // Even if there's an error, we should clear the local state
       setUser(null);
       setSession(null);
+      toast.error("Error during sign out");
       navigate("/login");
+    } finally {
+      setLoading(false);
     }
   };
 
