@@ -15,7 +15,7 @@ export const navigationItems = [
     href: "/",
   },
   {
-    title: "Donate",
+    title: "$Donate",
     icon: DollarSign,
     href: "/donate",
   },

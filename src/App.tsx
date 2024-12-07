@@ -12,12 +12,12 @@ import { adminRoutes } from "@/config/routes/adminRoutes";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
           <Routes>
             {publicRoutes.map((route) => (
               <Route key={route.path} {...route} />
@@ -29,10 +29,10 @@ const App = () => (
               <Route key={route.path} {...route} />
             ))}
           </Routes>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 export default App;

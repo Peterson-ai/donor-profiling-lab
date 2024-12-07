@@ -28,11 +28,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("AuthProvider: Initializing");
-    
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Initial session:", session);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -51,37 +48,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string): Promise<void> => {
-    console.log("Attempting to sign in with email:", email);
+  const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
-    if (error) {
-      console.error("Sign in error:", error);
-      throw error;
-    }
-    
-    console.log("Sign in successful");
+    if (error) throw error;
   };
 
   const signOut = async () => {
     try {
-      console.log("Attempting to sign out");
+      // First clear the local state
+      setUser(null);
+      setSession(null);
+      
+      // Then sign out from Supabase
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Error signing out:", error);
         throw error;
       }
       
-      // Clear local state
-      setUser(null);
-      setSession(null);
-      
-      // Navigate to login page
+      // Navigate to login page after successful logout
       navigate("/login");
-      console.log("Sign out successful");
     } catch (error) {
       console.error("Error during sign out:", error);
       // Even if there's an error, we should clear the local state
