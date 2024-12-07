@@ -19,12 +19,12 @@ const CampaignsPage = () => {
         throw error;
       }
       
-      // If no campaigns exist, return sample data for testing
+      // If no campaigns exist, return sample data with proper UUIDs
       if (!data || data.length === 0) {
         console.log("No campaigns found, using sample data");
         return [
           {
-            id: "1",
+            id: "123e4567-e89b-12d3-a456-426614174000",
             name: "Summer Camp Fund",
             description: "Help send scouts to summer camp",
             goal: 10000,
@@ -34,7 +34,7 @@ const CampaignsPage = () => {
             status: "active"
           },
           {
-            id: "2",
+            id: "123e4567-e89b-12d3-a456-426614174001",
             name: "Equipment Drive",
             description: "New camping equipment for troops",
             goal: 5000,
@@ -44,7 +44,7 @@ const CampaignsPage = () => {
             status: "active"
           },
           {
-            id: "3",
+            id: "123e4567-e89b-12d3-a456-426614174002",
             name: "Leadership Training",
             description: "Support leadership development programs",
             goal: 7500,

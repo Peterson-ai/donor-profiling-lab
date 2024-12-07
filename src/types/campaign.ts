@@ -1,5 +1,5 @@
 export interface Campaign {
-  id: string;
+  id: string; // UUID string format
   name: string;
   description: string;
   goal: number;
