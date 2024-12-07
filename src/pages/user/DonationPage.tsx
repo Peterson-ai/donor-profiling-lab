@@ -54,10 +54,11 @@ const DonationPage = () => {
     const appealCode = generateAppealCode("Annual Appeal", currentYear);
     
     try {
-      // First, create or get the donor record
+      console.log('Creating donor record...');
+      // First, create the donor record
       const { data: donorData, error: donorError } = await supabase
         .from('donors')
-        .insert([{
+        .insert({
           user_id: user.id,
           email: user.email,
           donation_amount: finalAmount,
@@ -72,16 +73,21 @@ const DonationPage = () => {
           city: selectedCounty,
           state: "Florida",
           zip: "33101"
-        }])
+        })
         .select()
         .single();
 
-      if (donorError) throw donorError;
+      if (donorError) {
+        console.error('Error creating donor:', donorError);
+        throw donorError;
+      }
 
-      // Then, create the donation record
+      console.log('Donor created:', donorData);
+
+      // Then, create the donation record using the donor ID
       const { error: donationError } = await supabase
         .from('donations')
-        .insert([{
+        .insert({
           donor_id: donorData.id,
           amount: finalAmount,
           frequency: frequency,
@@ -92,9 +98,12 @@ const DonationPage = () => {
             appeal_code: appealCode,
             year: currentYear
           }
-        }]);
+        });
 
-      if (donationError) throw donationError;
+      if (donationError) {
+        console.error('Error creating donation:', donationError);
+        throw donationError;
+      }
       
       toast({
         title: "Thank you for your donation!",
