@@ -60,7 +60,7 @@ const EventsPage = () => {
           className={`whitespace-nowrap ${
             selectedType === 'All' 
               ? 'bg-primary text-white' 
-              : 'border-gray-700 text-gray-200 hover:bg-accent hover:text-gray-900'
+              : 'border-gray-700 text-gray-900 hover:bg-accent hover:text-gray-900'
           }`}
         >
           All Events
@@ -73,7 +73,7 @@ const EventsPage = () => {
             className={`whitespace-nowrap ${
               selectedType === type 
                 ? 'bg-primary text-white' 
-                : 'border-gray-700 text-gray-200 hover:bg-accent hover:text-gray-900'
+                : 'border-gray-700 text-gray-900 hover:bg-accent hover:text-gray-900'
             }`}
           >
             {type}
