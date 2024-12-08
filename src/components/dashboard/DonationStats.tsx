@@ -47,7 +47,7 @@ export const DonationStats = () => {
         <h3 className="text-gray-400">Total Donations</h3>
         <DollarSign className="text-[#6366F1] h-5 w-5" />
       </div>
-      <p className="text-2xl font-bold">${totalDonations.toFixed(2)}</p>
+      <p className="text-2xl font-bold">${totalDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
       <p className="text-sm text-gray-400">Your lifetime contributions</p>
     </div>
   );
