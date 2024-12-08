@@ -57,7 +57,11 @@ const EventsPage = () => {
         <Button
           variant={selectedType === 'All' ? "default" : "outline"}
           onClick={() => setSelectedType('All')}
-          className="whitespace-nowrap"
+          className={`whitespace-nowrap ${
+            selectedType === 'All' 
+              ? 'bg-primary text-white' 
+              : 'border-gray-700 text-gray-200 hover:bg-accent hover:text-gray-900'
+          }`}
         >
           All Events
         </Button>
@@ -66,7 +70,11 @@ const EventsPage = () => {
             key={type}
             variant={selectedType === type ? "default" : "outline"}
             onClick={() => setSelectedType(type)}
-            className="whitespace-nowrap"
+            className={`whitespace-nowrap ${
+              selectedType === type 
+                ? 'bg-primary text-white' 
+                : 'border-gray-700 text-gray-200 hover:bg-accent hover:text-gray-900'
+            }`}
           >
             {type}
           </Button>
