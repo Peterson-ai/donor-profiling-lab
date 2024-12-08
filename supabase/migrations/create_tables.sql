@@ -96,7 +96,7 @@ DROP POLICY IF EXISTS "Enable insert for authenticated users" ON donations;
 DROP POLICY IF EXISTS "Enable update for own donations" ON donations;
 DROP POLICY IF EXISTS "Enable delete for own donations" ON donations;
 
--- Create new policies
+-- Create new policies with simplified insert rule
 CREATE POLICY "Enable read access for authenticated users" ON donations
   FOR SELECT USING (auth.role() = 'authenticated');
 
@@ -106,16 +106,20 @@ CREATE POLICY "Enable insert for authenticated users" ON donations
 CREATE POLICY "Enable update for own donations" ON donations
   FOR UPDATE USING (
     auth.role() = 'authenticated' AND 
-    donor_id IN (
-      SELECT id FROM donors WHERE user_id = auth.uid()
+    EXISTS (
+      SELECT 1 FROM donors 
+      WHERE donors.id = donations.donor_id 
+      AND donors.user_id = auth.uid()
     )
   );
 
 CREATE POLICY "Enable delete for own donations" ON donations
   FOR DELETE USING (
     auth.role() = 'authenticated' AND 
-    donor_id IN (
-      SELECT id FROM donors WHERE user_id = auth.uid()
+    EXISTS (
+      SELECT 1 FROM donors 
+      WHERE donors.id = donations.donor_id 
+      AND donors.user_id = auth.uid()
     )
   );
 
